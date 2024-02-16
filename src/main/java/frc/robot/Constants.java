@@ -47,9 +47,9 @@ public final class Constants {
     // If you call DriveSubsystem.drive() with a different period make sure to update this.
     public static final double kDrivePeriod = TimedRobot.kDefaultPeriod;
 
-    public static final double kTrackWidth = 0.5;
+    public static final double kTrackWidth = 0.406;
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = 0.7;
+    public static final double kWheelBase = 0.406;
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics kDriveKinematics =
         new SwerveDriveKinematics(
@@ -65,7 +65,7 @@ public final class Constants {
     // for *your* robot's drive.
     // The SysId tool provides a convenient method for obtaining these values for your robot.
    
-    public static final double kMaxSpeedMetersPerSecond = 4.5;
+    public static final double kMaxSpeedMetersPerSecond = 4.2;
   }
 
   public static final class ModuleConstants {
@@ -74,7 +74,12 @@ public final class Constants {
 
     public static final double kPModuleTurningController = 0.4;
 
-    public static final double kPModuleDriveController = 0.01;
+    public static final double kPModuleDriveController = 0.1;
+    public static final double kIModuleDriveController = 1.0;
+    public static final double kDModuleDriveController = 0.0;
+    public static final double kIZoneModuleDriveController = 0.3;
+    public static final double kToleranceModuleDriveController = 0.005;
+    public static final double kIntegratorMaxModuleDriveController = 1.0;
   }
 
   public static final class OIConstants {
