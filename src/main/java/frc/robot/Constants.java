@@ -47,9 +47,9 @@ public final class Constants {
     // If you call DriveSubsystem.drive() with a different period make sure to update this.
     public static final double kDrivePeriod = TimedRobot.kDefaultPeriod;
 
-    public static final double kTrackWidth = 0.406;
+    public static final double kTrackWidth = 0.5715;
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = 0.406;
+    public static final double kWheelBase = 0.5715;
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics kDriveKinematics =
         new SwerveDriveKinematics(
@@ -84,6 +84,20 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kOperatorStickPort = 1;
+  }
+
+public static final class ShooterConstants {
+    public static final int kkicky = 9;
+    public static final int kAimyUno = 10;
+    public static final int kAimyDos = 11;
+    public static final int kShootNSuckUno = 12;
+    public static final int kShootNSuckDos = 13;
+  }
+
+public static final class ClimberConstants {
+    public static final int kClimbyUno = 14;
+    public static final int kClimbyDos = 15;
   }
 
   public static final class AutoConstants {

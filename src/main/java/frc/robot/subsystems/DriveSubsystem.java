@@ -69,11 +69,6 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
-    System.out.println("front left: " + m_frontLeft.getState().speedMetersPerSecond);
-    System.out.println("front right: " + m_frontRight.getState().speedMetersPerSecond);
-    System.out.println("rear left: " + m_rearLeft.getState().speedMetersPerSecond);
-    System.out.println("rear right: " + m_rearRight.getState().speedMetersPerSecond);
-    System.out.println("==================================");
       }
 
   /**

@@ -12,13 +12,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -36,10 +38,12 @@ import java.util.List;
 public class RobotContainer {
     // The robot's subsystems
     private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+    private final ShooterSubsystem m_shooter = new ShooterSubsystem();
+    private final ClimberSubsystem m_climber = new ClimberSubsystem();
 
     // The driver's controller
     XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
-
+    Joystick m_operatorsStick = new Joystick(OIConstants.kOperatorStickPort);
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -69,6 +73,40 @@ public class RobotContainer {
                                     false);
                         },
                         m_robotDrive));
+        m_shooter.setDefaultCommand(
+                new RunCommand(
+                        () -> {
+                                double stickY = m_operatorsStick.getRawAxis(1);
+                                boolean shootButton = m_operatorsStick.getRawButton(1);
+                                boolean suckButton = m_operatorsStick.getRawButton(5);
+                                m_shooter.aimer(stickY);
+                                if (shootButton) {
+                                        m_shooter.shootnNSuck(1);
+                                } else if (suckButton) {
+                                        m_shooter.shootnNSuck(-1);
+                                } else {
+                                        m_shooter.shootnNSuck(0);
+                                }
+
+                        }
+                )
+        );
+        m_climber.setDefaultCommand(
+                new RunCommand(
+                        () -> {
+                                boolean extendoButton = m_operatorsStick.getRawButton(2);
+                                boolean retractoButton = m_operatorsStick.getRawButton(6);
+                                if (extendoButton) {
+                                        m_climber.climber(1);
+                                } else if (retractoButton) {
+                                        m_climber.climber(-1);
+                                } else {
+                                        m_climber.climber(0);
+                                }
+
+                        }
+                )
+        );
     }
 
     /**
@@ -101,9 +139,9 @@ public class RobotContainer {
                 // Start at the origin facing the +X direction
                 new Pose2d(0, 0, new Rotation2d(0)),
                 // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(3, 0), new Translation2d(0, 0)),
+                List.of(new Translation2d(3, -1)),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(3, 0, new Rotation2d(Units.degreesToRadians(180))),
+                new Pose2d(6, 1, new Rotation2d(0)),
                 config);
 
         var thetaController = new ProfiledPIDController(
