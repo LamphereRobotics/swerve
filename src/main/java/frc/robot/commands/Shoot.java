@@ -15,6 +15,6 @@ public class Shoot extends SequentialCommandGroup {
   public Shoot(double speed, ShooterSubsystem shooter) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new StartShooter(speed, shooter).withTimeout(.5), new HoldShooterAndFire(speed, shooter).withTimeout(1));
+    addCommands(new StartShooter(speed, shooter).withTimeout(.5), new HoldShooterAndFire(speed, 0.2, shooter).withTimeout(1));
   }
 }

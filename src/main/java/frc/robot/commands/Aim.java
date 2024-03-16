@@ -42,6 +42,6 @@ public class Aim extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_aimBotSubsytem.getController().atSetpoint();
+    return m_aimBotSubsytem.getController().atGoal();
   }
 }

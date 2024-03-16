@@ -32,8 +32,8 @@ public class ShooterSubsystem extends SubsystemBase {
     m_kicky.set(0);
   }
 
-  public void kicky() {
-    m_kicky.set(0.2);
+  public void kicky(double speed) {
+    m_kicky.set(speed);
   }
 
   public void stopShoot() {
@@ -57,7 +57,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void suck() {
-    if (!m_kickyLimitSwitch.get()) {
+    if (!hasNote()) {
       m_shootNSuckUno.set(-0.1); // -0.10 suck 0.10 shut
       m_shootNSuckDos.set(-0.1);
       m_kicky.set(-0.2);
@@ -65,5 +65,8 @@ public class ShooterSubsystem extends SubsystemBase {
       stopKicky();
       stopShoot();
     }
+  }
+  public boolean hasNote() {
+    return m_kickyLimitSwitch.get();
   }
 }

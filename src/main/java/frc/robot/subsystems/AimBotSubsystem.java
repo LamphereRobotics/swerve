@@ -38,7 +38,7 @@ class ArmConfig {
   public static final double kP = 0.1;
   public static final double kI = 0.5;
   public static final double kD = 0.005;
-  public static final double kPositionToleranceDegrees = 0.1;
+  public static final double kPositionToleranceDegrees = 0.5;
   public static final double kVelocityToleranceDegreesPerSecond = 0.1;
   public static final double kIZone = 5.0;
   public static final double kIntegratorRange = 2.0;

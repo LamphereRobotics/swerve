@@ -9,12 +9,14 @@ import frc.robot.subsystems.ShooterSubsystem;
 
 public class HoldShooterAndFire extends Command {
   private final double m_speed;
-  private final ShooterSubsystem m_shooter;
+  private final double m_kickySpeed;
+  protected final ShooterSubsystem m_shooter;
 
-  public HoldShooterAndFire(double speed, ShooterSubsystem shooter) {
+  public HoldShooterAndFire(double speed,double kickySpeed, ShooterSubsystem shooter) {
     addRequirements(shooter);
     m_speed = speed;
     m_shooter = shooter;
+    m_kickySpeed = kickySpeed;
   }
 
   // Called when the command is initially scheduled.
@@ -26,7 +28,7 @@ public class HoldShooterAndFire extends Command {
   @Override
   public void execute() {
     m_shooter.shoot(m_speed);
-    m_shooter.kicky();
+    m_shooter.kicky(m_kickySpeed);
   }
 
   // Called once the command ends or is interrupted.

@@ -20,6 +20,7 @@ import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Aim;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.Sucko;
 import frc.robot.subsystems.AimBotSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -93,7 +94,7 @@ public class RobotContainer {
                                                         if (shootButton) {
                                                                 m_shooter.shootShort();
                                                                 if (kickButton) {
-                                                                        m_shooter.kicky();
+                                                                        m_shooter.kicky(0.2);
                                                                 }
                                                         } else if (suckButton) {
                                                                 m_shooter.suck();
@@ -132,11 +133,10 @@ public class RobotContainer {
          */
 
         private void configureButtonBindings() {
-                m_operatorsStick.button(10).onTrue(new Aim(41, m_aimBot)).onFalse(m_aimBot.storeArmCommand());
-                m_operatorsStick.button(3).onTrue(new Aim(57, m_aimBot)).onFalse(m_aimBot.storeArmCommand());
-                m_operatorsStick.button(7).onTrue(new Aim(41, m_aimBot)).onFalse(m_aimBot.storeArmCommand());
-                m_operatorsStick.button(4).whileTrue(new Shoot(.4, m_shooter));
-        }
+                m_operatorsStick.button(1).whileTrue(new Aim(57, m_aimBot).andThen(new Shoot(.4, m_shooter))).onFalse(m_aimBot.storeArmCommand());
+                m_operatorsStick.button(5).whileTrue(new Aim(45, m_aimBot).andThen(new Shoot(.6, m_shooter))).onFalse(m_aimBot.storeArmCommand());
+                m_operatorsStick.button(2).whileTrue(new Aim(37, m_aimBot).andThen(new Sucko(-0.1, -0.2, m_shooter))).onFalse(m_aimBot.storeArmCommand());
+        }       
 
         /**
          * Use this to pass the autonomous command to the main {@link Robot} class.
