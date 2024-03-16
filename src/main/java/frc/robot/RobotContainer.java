@@ -12,12 +12,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.Aim;
 import frc.robot.subsystems.AimBotSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -28,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
 import java.util.List;
 
 /*
@@ -45,7 +47,7 @@ public class RobotContainer {
 
         // The driver's controller
         XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
-        Joystick m_operatorsStick = new Joystick(OIConstants.kOperatorStickPort);
+        CommandJoystick m_operatorsStick = new CommandJoystick(OIConstants.kOperatorStickPort);
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -84,9 +86,9 @@ public class RobotContainer {
                 m_shooter.setDefaultCommand(
                                 new RunCommand(
                                                 () -> {
-                                                        boolean shootButton = m_operatorsStick.getRawButton(1);
-                                                        boolean suckButton = m_operatorsStick.getRawButton(5);
-                                                        boolean kickButton = m_operatorsStick.getRawButton(9);
+                                                        boolean shootButton = m_operatorsStick.button(1).getAsBoolean();
+                                                        boolean suckButton = m_operatorsStick.button(5).getAsBoolean();
+                                                        boolean kickButton = m_operatorsStick.button(9).getAsBoolean();
                                                         if (shootButton) {
                                                                 m_shooter.shootShort();
                                                                 if (kickButton) {
@@ -103,8 +105,10 @@ public class RobotContainer {
                 m_climber.setDefaultCommand(
                                 new RunCommand(
                                                 () -> {
-                                                        boolean extendoButton = m_operatorsStick.getRawButton(2);
-                                                        boolean retractoButton = m_operatorsStick.getRawButton(6);
+                                                        boolean extendoButton = m_operatorsStick.button(2)
+                                                                        .getAsBoolean();
+                                                        boolean retractoButton = m_operatorsStick.button(6)
+                                                                        .getAsBoolean();
                                                         if (extendoButton) {
                                                                 m_climber.ascend();
                                                         } else if (retractoButton) {
@@ -114,19 +118,6 @@ public class RobotContainer {
                                                         }
 
                                                 }, m_climber));
-                m_aimBot.setDefaultCommand(new RunCommand(() -> {
-                        m_aimBot.disable();
-                        boolean lookUp = m_operatorsStick.getRawButton(3);
-                        boolean lookDown = m_operatorsStick.getRawButton(7);
-                        if (lookUp) {
-                                m_aimBot.lookUp();
-                        } else if (lookDown) {
-                                m_aimBot.lookDown();
-                        } else {
-                                m_aimBot.stop();
-                        }
-
-                }, m_aimBot));
         }
 
         /**
@@ -138,7 +129,11 @@ public class RobotContainer {
          * passing it to a
          * {@link JoystickButton}.
          */
+
         private void configureButtonBindings() {
+                m_operatorsStick.button(10).onTrue(new Aim(41, m_aimBot)).onFalse(m_aimBot.storeArmCommand());
+                m_operatorsStick.button(3).onTrue(new Aim(57, m_aimBot)).onFalse(m_aimBot.storeArmCommand());
+                m_operatorsStick.button(7).onTrue(new Aim(41, m_aimBot)).onFalse(m_aimBot.storeArmCommand());
         }
 
         /**

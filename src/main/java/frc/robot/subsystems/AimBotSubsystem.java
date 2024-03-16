@@ -4,7 +4,9 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -12,38 +14,44 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 
 class ArmConfig {
+  // Positions
+  public static final double kStoreArmDegrees = 0.0;
+
   // Motors
   public static final int kAimyUno = 10;
   public static final int kAimyDos = 11;
-  public static final boolean kAimyUnoInverted = true; // TODO: check inversion
-  public static final boolean kAimyDosInverted = false; // TODO: check inversion
+  public static final boolean kAimyUnoInverted = true;
+  public static final boolean kAimyDosInverted = false;
 
   // Encoder
   public static final int kAimyCancoder = 5;
-  public static final double kInputOffsetDegrees = -30.0;
+  public static final SensorDirectionValue kAimyCancoderDirection = SensorDirectionValue.Clockwise_Positive;
+  public static final double kEncoderScaleFactor = 18.0 / 68.0;
+  public static final double kInputOffsetDegrees = -29;
 
   // PID
-  public static final double kP = 0.0; // TODO: set this coefficient
-  public static final double kI = 0.0; // TODO: set this coefficient
-  public static final double kD = 0.0; // TODO: set this coefficient
-  public static final double kPositionToleranceDegrees = 0.5; // TODO: determine a reasonable tolerance
-  public static final double kVelocityToleranceDegreesPerSecond = 0.1; // TODO: determine a reasonable tolerance
-  public static final double kMinimumInputDegrees = 0.0;
-  public static final double kMaximumInputDegrees = 360.0;
+  public static final double kP = 0.1;
+  public static final double kI = 0.5;
+  public static final double kD = 0.005;
+  public static final double kPositionToleranceDegrees = 0.1;
+  public static final double kVelocityToleranceDegreesPerSecond = 0.1;
+  public static final double kIZone = 5.0;
+  public static final double kIntegratorRange = 2.0;
 
   // Feedforward
-  public static final double kSVolts = 0.0; // TODO: get this coefficient
-  public static final double kGVolts = 2.07; // TODO: check this pseudovalue from re-calc against arm
-  public static final double kVVoltSecondPerRad = 0.29; // TODO: check this pseudovalue from re-calc against arm
-  public static final double kAVoltSecondSquaredPerRad = 0.05; // TODO: check this pseudovalue from re-calc against arm
+  public static final double kSVolts = 0.16;
+  public static final double kGVolts = 0.65;
+  public static final double kVVoltSecondPerRad = 0.35;
+  public static final double kAVoltSecondSquaredPerRad = 0.0;
 
   // Motion profile
-  public static final double kMaxDegreesPerSecond = 90.0; // TODO: determine a reasonable max velocity
-  public static final double kMaxDegreesPerSecondSquared = kMaxDegreesPerSecond * 2.0; // TODO: determine a reasonable
-                                                                                       // max acceleration
+  public static final double kMaxDegreesPerSecond = 360.0;
+  public static final double kMaxDegreesPerSecondSquared = kMaxDegreesPerSecond * 4.0;
 }
 
 // PID, motion profile, measurement, and goal/setpoint are in degrees.
@@ -71,42 +79,64 @@ public class AimBotSubsystem extends ProfiledPIDSubsystem {
             ArmConfig.kD,
             // The motion profile constraints
             new TrapezoidProfile.Constraints(ArmConfig.kMaxDegreesPerSecond, ArmConfig.kMaxDegreesPerSecondSquared)),
-        ArmConfig.kInputOffsetDegrees);
+        ArmConfig.kStoreArmDegrees);
 
-    m_controller.enableContinuousInput(ArmConfig.kMinimumInputDegrees, ArmConfig.kMaximumInputDegrees);
     m_controller.setTolerance(ArmConfig.kPositionToleranceDegrees, ArmConfig.kVelocityToleranceDegreesPerSecond);
+    m_controller.setIZone(ArmConfig.kIZone);
+    m_controller.setIntegratorRange(-ArmConfig.kIntegratorRange, ArmConfig.kIntegratorRange);
 
     m_leftMotor.setInverted(ArmConfig.kAimyUnoInverted);
     m_rightMotor.setInverted(ArmConfig.kAimyDosInverted);
+
+    m_encoder.getConfigurator().apply(new MagnetSensorConfigs().withSensorDirection(ArmConfig.kAimyCancoderDirection));
+
+    enable();
   }
 
   @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
-    // Use the output (and optionally the setpoint) here
-    // double actualOutput = output
-    //     + m_feedForward.calculate(Units.degreesToRadians(setpoint.position), Units.degreesToRadians(setpoint.velocity));
-    // m_leftMotor.setVoltage(actualOutput);
-    // m_rightMotor.setVoltage(actualOutput);
+    System.out.println("Arm angle: " + getMeasurement());
+    System.out.println("Arm velocity: " + getVelocity());
+    System.out.println("Arm voltage: " + getOutputVoltage());
+    System.out.println("Desired position: " + setpoint.position);
+    System.out.println("Desired velocity: " + setpoint.velocity);
+
+    if (m_enabled) {
+      double actualOutput = output
+          + m_feedForward.calculate(Units.degreesToRadians(getMeasurement()),
+              Units.degreesToRadians(setpoint.velocity));
+      m_leftMotor.setVoltage(actualOutput);
+      m_rightMotor.setVoltage(actualOutput);
+    } else {
+      double actualOutput = m_feedForward.calculate(Units.degreesToRadians(getMeasurement()),
+          0.0);
+      m_leftMotor.setVoltage(actualOutput);
+      m_rightMotor.setVoltage(actualOutput);
+    }
   }
 
   @Override
   public double getMeasurement() {
-    // Return the process variable measurement here
-    return Units.rotationsToDegrees(m_encoder.getAbsolutePosition().getValueAsDouble()) + ArmConfig.kInputOffsetDegrees;
+    return Units.rotationsToDegrees(m_encoder.getPosition().getValueAsDouble() * ArmConfig.kEncoderScaleFactor)
+        + ArmConfig.kInputOffsetDegrees;
   }
 
-  public void lookUp() {
-    m_leftMotor.set(0.1);
-    m_rightMotor.set(0.1);
+  public double getVelocity() {
+    return Units.rotationsToDegrees(m_encoder.getVelocity().getValueAsDouble() * ArmConfig.kEncoderScaleFactor);
   }
 
-  public void lookDown() {
-    m_leftMotor.set(-0.1);
-    m_rightMotor.set(-0.1);
+  public double getOutputVoltage() {
+    return m_leftMotor.getAppliedOutput() * m_leftMotor.getBusVoltage();
   }
 
-  public void stop() {
-    m_leftMotor.set(0);
-    m_rightMotor.set(0);
+  public Command setGoalCommand(double goal) {
+    return new InstantCommand(() -> {
+      setGoal(goal);
+      enable();
+    }, this);
+  }
+
+  public Command storeArmCommand() {
+    return setGoalCommand(ArmConfig.kStoreArmDegrees);
   }
 }
