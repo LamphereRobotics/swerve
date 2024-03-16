@@ -4,28 +4,33 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 
 public class ClimberSubsystem extends SubsystemBase {
+  private final ClimberModule m_climbyUno = new ClimberModule(ClimberConstants.kClimbyUno, ClimberConstants.kClimbyLimitSwitchUno, true);
+  private final ClimberModule m_climbyDos = new ClimberModule(ClimberConstants.kClimbyDos, ClimberConstants.kClimbyLimitSwitchDos, false);
 
-  private final CANSparkMax m_climbyUno = new CANSparkMax(ClimberConstants.kClimbyUno, MotorType.kBrushless);
-  private final CANSparkMax m_climbyDos = new CANSparkMax(ClimberConstants.kClimbyDos, MotorType.kBrushless);
-  /** Creates a new Climbing. */
-  public ClimberSubsystem() {
-    
-  }
+  /** Creates a new ClimberSubsystem. */
+  public ClimberSubsystem() {}
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
 
-  public void climber (double value) {
-    m_climbyUno.set(value);
-    m_climbyDos.set(value);
+  public void ascend() {
+    m_climbyUno.ascend();
+    m_climbyDos.ascend();
+  }
+
+  public void descend() {
+    m_climbyUno.descend();
+    m_climbyDos.descend();
+  }
+
+  public void stop() {
+    m_climbyUno.stop();
+    m_climbyDos.stop();
   }
 }

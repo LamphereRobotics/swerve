@@ -6,17 +6,18 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
 
   // put all the ids in constants
-  private final CANSparkMax m_kicky = new CANSparkMax(ShooterConstants.kkicky, MotorType.kBrushless);
-  private final CANSparkMax m_aimyUno = new CANSparkMax(ShooterConstants.kAimyUno, MotorType.kBrushless);
-  private final CANSparkMax m_aimyDos = new CANSparkMax(ShooterConstants.kAimyDos, MotorType.kBrushless);
+  private final CANSparkMax m_kicky = new CANSparkMax(ShooterConstants.kKicky, MotorType.kBrushless);
   private final CANSparkMax m_shootNSuckUno = new CANSparkMax(ShooterConstants.kShootNSuckUno, MotorType.kBrushless);
   private final CANSparkMax m_shootNSuckDos = new CANSparkMax(ShooterConstants.kShootNSuckDos, MotorType.kBrushless);
+  private final DigitalInput m_kickyLimitSwitch = new DigitalInput(ShooterConstants.kKickyLimitSwitch);
 
   public ShooterSubsystem() {
 
@@ -27,14 +28,37 @@ public class ShooterSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void aimer(double value) {
-    m_aimyDos.set(value);
-    m_aimyUno.set(value);
+  public void stopKicky() {
+    m_kicky.set(0);
   }
 
-  public void shootnNSuck(double value) {
-    m_shootNSuckUno.set(value);
-    m_shootNSuckDos.set(value);
-    m_kicky.set(value * 0.25);
+  public void kicky() {
+    m_kicky.set(0.2);
+  }
+
+  public void stopShoot() {
+    m_shootNSuckUno.set(0); // -0.10 suck 0.10 shut
+    m_shootNSuckDos.set(0);
+  }
+
+  public void shootShort() {
+    m_shootNSuckUno.set(0.4); // -0.10 suck 0.10 shut
+    m_shootNSuckDos.set(0.4);
+  }
+
+  public void shootFarther() {
+    m_shootNSuckUno.set(0.6); // -0.10 suck 0.10 shut
+    m_shootNSuckDos.set(0.6);
+  }
+
+  public void suck() {
+    if (!m_kickyLimitSwitch.get()) {
+      m_shootNSuckUno.set(-0.1); // -0.10 suck 0.10 shut
+      m_shootNSuckDos.set(-0.1);
+      m_kicky.set(-0.2);
+    } else {
+      stopKicky();
+      stopShoot();
+    }
   }
 }

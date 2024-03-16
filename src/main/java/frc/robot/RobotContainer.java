@@ -18,6 +18,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.AimBotSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -40,6 +41,7 @@ public class RobotContainer {
         private final DriveSubsystem m_robotDrive = new DriveSubsystem();
         private final ShooterSubsystem m_shooter = new ShooterSubsystem();
         private final ClimberSubsystem m_climber = new ClimberSubsystem();
+        private final AimBotSubsystem m_aimBot = new AimBotSubsystem();
 
         // The driver's controller
         XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -82,16 +84,19 @@ public class RobotContainer {
                 m_shooter.setDefaultCommand(
                                 new RunCommand(
                                                 () -> {
-                                                        double stickY = m_operatorsStick.getRawAxis(1);
                                                         boolean shootButton = m_operatorsStick.getRawButton(1);
                                                         boolean suckButton = m_operatorsStick.getRawButton(5);
-                                                        m_shooter.aimer(stickY);
+                                                        boolean kickButton = m_operatorsStick.getRawButton(9);
                                                         if (shootButton) {
-                                                                m_shooter.shootnNSuck(1);
+                                                                m_shooter.shootShort();
+                                                                if (kickButton) {
+                                                                        m_shooter.kicky();
+                                                                }
                                                         } else if (suckButton) {
-                                                                m_shooter.shootnNSuck(-1);
+                                                                m_shooter.suck();
                                                         } else {
-                                                                m_shooter.shootnNSuck(0);
+                                                                m_shooter.stopShoot();
+                                                                m_shooter.stopKicky();
                                                         }
 
                                                 }, m_shooter));
@@ -101,14 +106,27 @@ public class RobotContainer {
                                                         boolean extendoButton = m_operatorsStick.getRawButton(2);
                                                         boolean retractoButton = m_operatorsStick.getRawButton(6);
                                                         if (extendoButton) {
-                                                                m_climber.climber(1);
+                                                                m_climber.ascend();
                                                         } else if (retractoButton) {
-                                                                m_climber.climber(-1);
+                                                                m_climber.descend();
                                                         } else {
-                                                                m_climber.climber(0);
+                                                                m_climber.stop();
                                                         }
 
                                                 }, m_climber));
+                m_aimBot.setDefaultCommand(new RunCommand(() -> {
+                        m_aimBot.disable();
+                        boolean lookUp = m_operatorsStick.getRawButton(3);
+                        boolean lookDown = m_operatorsStick.getRawButton(7);
+                        if (lookUp) {
+                                m_aimBot.lookUp();
+                        } else if (lookDown) {
+                                m_aimBot.lookDown();
+                        } else {
+                                m_aimBot.stop();
+                        }
+
+                }, m_aimBot));
         }
 
         /**

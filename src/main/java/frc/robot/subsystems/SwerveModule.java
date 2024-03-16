@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -28,8 +27,11 @@ public class SwerveModule {
   private final CANcoder m_turningEncoder;
   private final RelativeEncoder m_driveEncoder;
 
-  private final PIDController m_drivePIDController = new PIDController(ModuleConstants.kPModuleDriveController,
-      ModuleConstants.kIModuleDriveController, ModuleConstants.kDModuleDriveController);
+  private final ProfiledPIDController m_drivePIDController = new ProfiledPIDController(ModuleConstants.kPModuleDriveController,
+      ModuleConstants.kIModuleDriveController, ModuleConstants.kDModuleDriveController,
+      new TrapezoidProfile.Constraints(
+          ModuleConstants.kMaxModuleSpeedMetersPerSecond,
+          ModuleConstants.kMaxModuleAccelerationMetersPerSecondSquared));
 
   // Using a TrapezoidProfile PIDController to allow for smooth turning
   private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
@@ -41,7 +43,7 @@ public class SwerveModule {
           ModuleConstants.kMaxModuleAngularAccelerationRadiansPerSecondSquared));
 
   /**
-   * Constructs a SwerveModule.
+   * Constructs a SwerveModule.m_drivePIDController
    *
    * @param driveMotorChannel      The channel of the drive motor.
    * @param turningMotorChannel    The channel of the turning motor.

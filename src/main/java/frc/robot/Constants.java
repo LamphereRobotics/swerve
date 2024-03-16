@@ -65,12 +65,14 @@ public final class Constants {
     // for *your* robot's drive.
     // The SysId tool provides a convenient method for obtaining these values for your robot.
    
-    public static final double kMaxSpeedMetersPerSecond = 4.2;
+    public static final double kMaxSpeedMetersPerSecond = 4.2; //4.2
   }
 
   public static final class ModuleConstants {
-    public static final double kMaxModuleAngularSpeedRadiansPerSecond = 4 * 2 * Math.PI;
-    public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 4 * 2 * Math.PI * 4;
+    public static final double kMaxModuleAngularSpeedRadiansPerSecond = 3 * 2 * Math.PI;
+    public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 3 * 2 * Math.PI * 4;
+    public static final double kMaxModuleSpeedMetersPerSecond = 4.2;
+    public static final double kMaxModuleAccelerationMetersPerSecondSquared = 4.2 * 4;
 
     public static final double kPModuleTurningController = 0.4;
 
@@ -80,6 +82,7 @@ public final class Constants {
     public static final double kIZoneModuleDriveController = 0.3;
     public static final double kToleranceModuleDriveController = 0.005;
     public static final double kIntegratorMaxModuleDriveController = 1.0;
+    
   }
 
   public static final class OIConstants {
@@ -88,16 +91,23 @@ public final class Constants {
   }
 
 public static final class ShooterConstants {
-    public static final int kkicky = 9;
-    public static final int kAimyUno = 10;
-    public static final int kAimyDos = 11;
+    public static final int kKicky = 9;
+    public static final int kKickyLimitSwitch = 0;
     public static final int kShootNSuckUno = 12;
     public static final int kShootNSuckDos = 13;
+  }
+
+  public static final class AimyConstants {
+    public static final int kAimyUno = 10;
+    public static final int kAimyDos = 11;
+    public static final int kAimyCancoder = 5;
   }
 
 public static final class ClimberConstants {
     public static final int kClimbyUno = 14;
     public static final int kClimbyDos = 15;
+    public static final int kClimbyLimitSwitchUno = 1;
+    public static final int kClimbyLimitSwitchDos = 2;
   }
 
   public static final class AutoConstants {
