@@ -19,6 +19,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Aim;
+import frc.robot.commands.Shoot;
 import frc.robot.subsystems.AimBotSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -134,6 +135,7 @@ public class RobotContainer {
                 m_operatorsStick.button(10).onTrue(new Aim(41, m_aimBot)).onFalse(m_aimBot.storeArmCommand());
                 m_operatorsStick.button(3).onTrue(new Aim(57, m_aimBot)).onFalse(m_aimBot.storeArmCommand());
                 m_operatorsStick.button(7).onTrue(new Aim(41, m_aimBot)).onFalse(m_aimBot.storeArmCommand());
+                m_operatorsStick.button(4).whileTrue(new Shoot(.4, m_shooter));
         }
 
         /**

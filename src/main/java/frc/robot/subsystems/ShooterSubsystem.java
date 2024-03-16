@@ -51,6 +51,11 @@ public class ShooterSubsystem extends SubsystemBase {
     m_shootNSuckDos.set(0.6);
   }
 
+  public void shoot(double speed) {
+    m_shootNSuckUno.set(speed); // -0.10 suck 0.10 shut
+    m_shootNSuckDos.set(speed);
+  }
+
   public void suck() {
     if (!m_kickyLimitSwitch.get()) {
       m_shootNSuckUno.set(-0.1); // -0.10 suck 0.10 shut
