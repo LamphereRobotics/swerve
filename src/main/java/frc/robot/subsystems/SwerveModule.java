@@ -9,15 +9,24 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-//import edu.wpi.first.units.Measure; not currently used
 import frc.robot.Constants.ModuleConstants;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkRelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.hardware.CANcoder;
 
 public class SwerveModule {
@@ -27,7 +36,8 @@ public class SwerveModule {
   private final CANcoder m_turningEncoder;
   private final RelativeEncoder m_driveEncoder;
 
-  private final ProfiledPIDController m_drivePIDController = new ProfiledPIDController(ModuleConstants.kPModuleDriveController,
+  private final ProfiledPIDController m_drivePIDController = new ProfiledPIDController(
+      ModuleConstants.kPModuleDriveController,
       ModuleConstants.kIModuleDriveController, ModuleConstants.kDModuleDriveController,
       new TrapezoidProfile.Constraints(
           ModuleConstants.kMaxModuleSpeedMetersPerSecond,
@@ -58,10 +68,10 @@ public class SwerveModule {
     m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
     m_turningMotor.setInverted(true);
-    
+
     m_driveMotor.setIdleMode(IdleMode.kBrake);
     m_turningMotor.setIdleMode(IdleMode.kBrake);
-  
+
     m_turningEncoder = new CANcoder(turningEncoderChannel);
 
     m_driveEncoder = m_driveMotor.getEncoder(SparkRelativeEncoder.Type.kHallSensor, 42);
@@ -137,5 +147,25 @@ public class SwerveModule {
 
   private double getTurnAngle() {
     return m_turningEncoder.getAbsolutePosition().getValue() * 2 * Math.PI;
+  }
+
+  public void logDrive(SysIdRoutineLog log, String name) {
+    log.motor(name).voltage(Volts.of(m_driveMotor.getAppliedOutput() * m_driveMotor.getBusVoltage()))
+        .linearPosition(Meters.of(m_driveEncoder.getPosition()))
+        .linearVelocity(MetersPerSecond.of(m_driveEncoder.getVelocity()));
+  }
+
+  public void voltageDrive(Measure<Voltage> volts) {
+    m_driveMotor.setVoltage(volts.magnitude());
+  }
+
+  public void logSpin(SysIdRoutineLog log, String name) {
+    log.motor(name).voltage(Volts.of(m_turningMotor.getAppliedOutput() * m_turningMotor.getBusVoltage()))
+        .angularPosition(Radians.of(getTurnAngle()))
+        .angularVelocity(RotationsPerSecond.of(m_turningEncoder.getVelocity().getValueAsDouble()));
+  }
+
+  public void voltageSpin(Measure<Voltage> volts) {
+    m_turningMotor.setVoltage(volts.magnitude());
   }
 }

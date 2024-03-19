@@ -13,7 +13,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class RobotContainer {
         private final AimBotSubsystem m_aimBot = new AimBotSubsystem();
 
         // The driver's controller
-        XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+        CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
         CommandJoystick m_operatorsStick = new CommandJoystick(OIConstants.kOperatorStickPort);
 
         /**
@@ -136,6 +137,16 @@ public class RobotContainer {
                 m_operatorsStick.button(1).whileTrue(new Aim(57, m_aimBot).andThen(new Shoot(.4, m_shooter))).onFalse(m_aimBot.storeArmCommand());
                 m_operatorsStick.button(5).whileTrue(new Aim(45, m_aimBot).andThen(new Shoot(.6, m_shooter))).onFalse(m_aimBot.storeArmCommand());
                 m_operatorsStick.button(2).whileTrue(new Aim(37, m_aimBot).andThen(new Sucko(-0.1, -0.2, m_shooter))).onFalse(m_aimBot.storeArmCommand());
+
+                m_driverController.a().whileTrue(m_robotDrive.quasistaticSpin(Direction.kReverse));
+                m_driverController.b().whileTrue(m_robotDrive.quasistaticSpin(Direction.kForward));
+                m_driverController.x().whileTrue(m_robotDrive.dynamicSpin(Direction.kReverse));
+                m_driverController.y().whileTrue(m_robotDrive.dynamicSpin(Direction.kForward));
+
+                // m_driverController.a().whileTrue(m_robotDrive.quasistaticDrive(Direction.kReverse));
+                // m_driverController.b().whileTrue(m_robotDrive.quasistaticDrive(Direction.kForward));
+                // m_driverController.x().whileTrue(m_robotDrive.dynamicDrive(Direction.kReverse));
+                // m_driverController.y().whileTrue(m_robotDrive.dynamicDrive(Direction.kForward));
         }       
 
         /**

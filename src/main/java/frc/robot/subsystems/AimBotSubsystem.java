@@ -95,12 +95,6 @@ public class AimBotSubsystem extends ProfiledPIDSubsystem {
 
   @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
-    System.out.println("Arm angle: " + getMeasurement());
-    System.out.println("Arm velocity: " + getVelocity());
-    System.out.println("Arm voltage: " + getOutputVoltage());
-    System.out.println("Desired position: " + setpoint.position);
-    System.out.println("Desired velocity: " + setpoint.velocity);
-
     if (m_enabled) {
       double actualOutput = output
           + m_feedForward.calculate(Units.degreesToRadians(getMeasurement()),
