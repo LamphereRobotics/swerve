@@ -5,27 +5,18 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.Voltage;
-import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import frc.robot.Constants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkRelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 
@@ -43,11 +34,13 @@ public class SwerveModule {
           ModuleConstants.kMaxModuleSpeedMetersPerSecond,
           ModuleConstants.kMaxModuleAccelerationMetersPerSecondSquared));
 
+  private final SimpleMotorFeedforward m_driveFeedForward = new SimpleMotorFeedforward(0.25156, 2.6507, 0.53777);
+
   // Using a TrapezoidProfile PIDController to allow for smooth turning
   private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
       ModuleConstants.kPModuleTurningController,
       0,
-      0,
+      ModuleConstants.kDModuleTurningController,
       new TrapezoidProfile.Constraints(
           ModuleConstants.kMaxModuleAngularSpeedRadiansPerSecond,
           ModuleConstants.kMaxModuleAngularAccelerationRadiansPerSecondSquared));
@@ -86,6 +79,9 @@ public class SwerveModule {
     // Limit the PID Controller's input range between -pi and pi and set the input
     // to be continuous.
     m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
+
+    m_turningPIDController.setTolerance(Constants.ModuleConstants.kPositionToleranceModuleTurningController,
+        Constants.ModuleConstants.kVelocityToleranceModuleTurningController);
   }
 
   /**
@@ -134,8 +130,7 @@ public class SwerveModule {
 
     // Calculate the turning motor output from the turning PID controller.
     m_driveMotor.set(
-        driveOutput + Math.min(Math.abs(state.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond), 0.95)
-            * Math.signum(state.speedMetersPerSecond));
+        driveOutput + m_driveFeedForward.calculate(state.speedMetersPerSecond));
     m_turningMotor.set(turnOutput);
   }
 
@@ -147,25 +142,5 @@ public class SwerveModule {
 
   private double getTurnAngle() {
     return m_turningEncoder.getAbsolutePosition().getValue() * 2 * Math.PI;
-  }
-
-  public void logDrive(SysIdRoutineLog log, String name) {
-    log.motor(name).voltage(Volts.of(m_driveMotor.getAppliedOutput() * m_driveMotor.getBusVoltage()))
-        .linearPosition(Meters.of(m_driveEncoder.getPosition()))
-        .linearVelocity(MetersPerSecond.of(m_driveEncoder.getVelocity()));
-  }
-
-  public void voltageDrive(Measure<Voltage> volts) {
-    m_driveMotor.setVoltage(volts.magnitude());
-  }
-
-  public void logSpin(SysIdRoutineLog log, String name) {
-    log.motor(name).voltage(Volts.of(m_turningMotor.getAppliedOutput() * m_turningMotor.getBusVoltage()))
-        .angularPosition(Radians.of(getTurnAngle()))
-        .angularVelocity(RotationsPerSecond.of(m_turningEncoder.getVelocity().getValueAsDouble()));
-  }
-
-  public void voltageSpin(Measure<Voltage> volts) {
-    m_turningMotor.setVoltage(volts.magnitude());
   }
 }

@@ -10,16 +10,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.Voltage;
-import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import frc.robot.Constants.DriveConstants;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
-
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -174,55 +166,5 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public double getTurnRate() {
     return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
-  }
-
-  private final SysIdRoutine driveRoutine = new SysIdRoutine(new Config(),
-      new Mechanism(this::voltageDrive, this::logDrive, this));
-
-  private void logDrive(SysIdRoutineLog log) {
-    m_frontLeft.logDrive(log, "front-left-drive");
-    m_frontRight.logDrive(log, "front-right-drive");
-    m_rearLeft.logDrive(log, "rear-left-drive");
-    m_rearRight.logDrive(log, "rear-right-drive");
-  }
-
-  public Command dynamicDrive(SysIdRoutine.Direction direction) {
-    return driveRoutine.dynamic(direction);
-  }
-
-  public Command quasistaticDrive(SysIdRoutine.Direction direction) {
-    return driveRoutine.quasistatic(direction);
-  }
-
-  private void voltageDrive(Measure<Voltage> volts) {
-    m_frontLeft.voltageDrive(volts);
-    m_frontRight.voltageDrive(volts);
-    m_rearLeft.voltageDrive(volts);
-    m_rearRight.voltageDrive(volts);
-  }
-
-  private final SysIdRoutine spinRoutine = new SysIdRoutine(new Config(),
-      new Mechanism(this::voltageSpin, this::logSpin, this));
-
-  private void logSpin(SysIdRoutineLog log) {
-    m_frontLeft.logSpin(log, "front-left-spin");
-    m_frontRight.logSpin(log, "front-right-spin");
-    m_rearLeft.logSpin(log, "rear-left-spin");
-    m_rearRight.logSpin(log, "rear-right-spin");
-  }
-
-  private void voltageSpin(Measure<Voltage> volts) {
-    m_frontLeft.voltageSpin(volts);
-    m_frontRight.voltageSpin(volts);
-    m_rearLeft.voltageSpin(volts);
-    m_rearRight.voltageSpin(volts);
-  }
-
-  public Command dynamicSpin(SysIdRoutine.Direction direction) {
-    return spinRoutine.dynamic(direction);
-  }
-
-  public Command quasistaticSpin(SysIdRoutine.Direction direction) {
-    return spinRoutine.quasistatic(direction);
   }
 }

@@ -31,8 +31,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
 import java.util.List;
 
 /*
@@ -134,20 +132,13 @@ public class RobotContainer {
          */
 
         private void configureButtonBindings() {
-                m_operatorsStick.button(1).whileTrue(new Aim(57, m_aimBot).andThen(new Shoot(.4, m_shooter))).onFalse(m_aimBot.storeArmCommand());
-                m_operatorsStick.button(5).whileTrue(new Aim(45, m_aimBot).andThen(new Shoot(.6, m_shooter))).onFalse(m_aimBot.storeArmCommand());
-                m_operatorsStick.button(2).whileTrue(new Aim(37, m_aimBot).andThen(new Sucko(-0.1, -0.2, m_shooter))).onFalse(m_aimBot.storeArmCommand());
-
-                m_driverController.a().whileTrue(m_robotDrive.quasistaticSpin(Direction.kReverse));
-                m_driverController.b().whileTrue(m_robotDrive.quasistaticSpin(Direction.kForward));
-                m_driverController.x().whileTrue(m_robotDrive.dynamicSpin(Direction.kReverse));
-                m_driverController.y().whileTrue(m_robotDrive.dynamicSpin(Direction.kForward));
-
-                // m_driverController.a().whileTrue(m_robotDrive.quasistaticDrive(Direction.kReverse));
-                // m_driverController.b().whileTrue(m_robotDrive.quasistaticDrive(Direction.kForward));
-                // m_driverController.x().whileTrue(m_robotDrive.dynamicDrive(Direction.kReverse));
-                // m_driverController.y().whileTrue(m_robotDrive.dynamicDrive(Direction.kForward));
-        }       
+                m_operatorsStick.button(1).whileTrue(new Aim(57, m_aimBot).andThen(new Shoot(.4, m_shooter)))
+                                .onFalse(m_aimBot.storeArmCommand());
+                m_operatorsStick.button(5).whileTrue(new Aim(45, m_aimBot).andThen(new Shoot(.6, m_shooter)))
+                                .onFalse(m_aimBot.storeArmCommand());
+                m_operatorsStick.button(2).whileTrue(new Aim(37, m_aimBot).andThen(new Sucko(-0.1, -0.2, m_shooter)))
+                                .onFalse(m_aimBot.storeArmCommand());
+        }
 
         /**
          * Use this to pass the autonomous command to the main {@link Robot} class.
