@@ -89,9 +89,11 @@ public class AimBotSubsystem extends ProfiledPIDSubsystem {
     m_rightMotor.setInverted(ArmConfig.kAimyDosInverted);
 
     m_encoder.getConfigurator().apply(new MagnetSensorConfigs().withSensorDirection(ArmConfig.kAimyCancoderDirection));
+    m_encoder.setPosition(0);
 
     enable();
   }
+  
 
   @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {

@@ -30,21 +30,11 @@ public class ClimberModule extends SubsystemBase {
   }
 
   public void ascend() {
-    if (m_encoder.getPosition() < 100) {
-      m_climbyMotor.set(0.06);
-
-    } else {
-      m_climbyMotor.set(0);
-    }
+      m_climbyMotor.set(0.1);
   }
 
   public void descend() {
-    if (!m_climbyLimitSwitch.get()) {
-      m_climbyMotor.set(-0.06);
-    } else {
-      m_climbyMotor.set(0);
-      m_encoder.setPosition(0);
-    }
+  m_climbyMotor.set(-0.1);
   }
 
   public void stop() {

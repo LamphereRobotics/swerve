@@ -87,28 +87,17 @@ public class RobotContainer {
                 m_shooter.setDefaultCommand(
                                 new RunCommand(
                                                 () -> {
-                                                        boolean shootButton = m_operatorsStick.button(1).getAsBoolean();
-                                                        boolean suckButton = m_operatorsStick.button(5).getAsBoolean();
-                                                        boolean kickButton = m_operatorsStick.button(9).getAsBoolean();
-                                                        if (shootButton) {
-                                                                m_shooter.shootShort();
-                                                                if (kickButton) {
-                                                                        m_shooter.kicky(0.2);
-                                                                }
-                                                        } else if (suckButton) {
-                                                                m_shooter.suck();
-                                                        } else {
-                                                                m_shooter.stopShoot();
-                                                                m_shooter.stopKicky();
-                                                        }
+
+                                                        m_shooter.stopShoot();
+                                                        m_shooter.stopKicky();
 
                                                 }, m_shooter));
                 m_climber.setDefaultCommand(
                                 new RunCommand(
                                                 () -> {
-                                                        boolean extendoButton = m_operatorsStick.button(2)
+                                                        boolean extendoButton = m_operatorsStick.button(4)
                                                                         .getAsBoolean();
-                                                        boolean retractoButton = m_operatorsStick.button(6)
+                                                        boolean retractoButton = m_operatorsStick.button(8)
                                                                         .getAsBoolean();
                                                         if (extendoButton) {
                                                                 m_climber.ascend();
@@ -134,9 +123,13 @@ public class RobotContainer {
         private void configureButtonBindings() {
                 m_operatorsStick.button(1).whileTrue(new Aim(57, m_aimBot).andThen(new Shoot(.4, m_shooter)))
                                 .onFalse(m_aimBot.storeArmCommand());
+                m_operatorsStick.button(9).whileTrue(new Aim(80, m_aimBot).andThen(new Shoot(.09, m_shooter)))
+                                .onFalse(m_aimBot.storeArmCommand());
                 m_operatorsStick.button(5).whileTrue(new Aim(45, m_aimBot).andThen(new Shoot(.6, m_shooter)))
                                 .onFalse(m_aimBot.storeArmCommand());
-                m_operatorsStick.button(2).whileTrue(new Aim(37, m_aimBot).andThen(new Sucko(-0.1, -0.2, m_shooter)))
+                m_operatorsStick.button(2).whileTrue(new Aim(34, m_aimBot).andThen(new Sucko(-0.15, -0.2, m_shooter)))
+                                .onFalse(m_aimBot.storeArmCommand());
+                m_operatorsStick.button(6).whileTrue(new Aim(70, m_aimBot))
                                 .onFalse(m_aimBot.storeArmCommand());
         }
 
