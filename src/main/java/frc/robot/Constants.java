@@ -97,6 +97,8 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorStickPort = 1;
+
+    public static final double kDeadband = 0.5;
   }
 
   public static final class ShooterConstants {

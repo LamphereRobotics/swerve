@@ -30,11 +30,11 @@ public class ClimberModule extends SubsystemBase {
   }
 
   public void ascend() {
-      m_climbyMotor.set(0.1);
+    m_climbyMotor.set(0.1);
   }
 
   public void descend() {
-  m_climbyMotor.set(-0.1);
+    m_climbyMotor.set(-0.1);
   }
 
   public void stop() {
