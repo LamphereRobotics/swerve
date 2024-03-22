@@ -13,7 +13,6 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AutoConstants;
@@ -29,7 +28,6 @@ import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.List;
@@ -60,70 +58,10 @@ public class RobotContainer {
                 // Configure the button bindings
                 configureButtonBindings();
 
-                // SmartDashboard.putNumber("OutVolt", 0);
-                // SmartDashboard.putNumber("OutFF", 0);
-
                 // Configure default commands
-                m_robotDrive.setDefaultCommand(
-                                // The left stick controls translation of the robot.
-                                // Turning is controlled by the X axis of the right stick.
-                                new RunCommand(
-                                                () -> {
-                                                        boolean theTurtle = m_driverController.leftTrigger()
-                                                                        .getAsBoolean();
-                                                        boolean fieldRelative = m_driverController.rightBumper()
-                                                                        .getAsBoolean();
-                                                        double leftY = WithDeadband(Constants.OIConstants.kDeadband,
-                                                                        -m_driverController.getLeftY());
-                                                        double leftX = WithDeadband(Constants.OIConstants.kDeadband,
-                                                                        -m_driverController.getLeftX());
-                                                        double rightX = WithDeadband(Constants.OIConstants.kDeadband,
-                                                                        -m_driverController.getRightX());
-                                                        double maxSpeed = theTurtle
-                                                                        ? DriveConstants.kMaxSpeedMetersPerSecond * 0.5
-                                                                        : DriveConstants.kMaxSpeedMetersPerSecond;
-                                                        m_robotDrive.drive(
-                                                                        // Multiply by max speed to map the
-                                                                        // joystick
-                                                                        // unitless inputs to actual units.
-                                                                        // This will map the [-1, 1] to [max
-                                                                        // speed
-                                                                        // backwards, max speed forwards],
-                                                                        // converting them to actual units.
-                                                                        leftY * maxSpeed,
-                                                                        leftX * maxSpeed,
-                                                                        rightX * DriveConstants.kMaxRotationRadiansPerSecond,
-                                                                        fieldRelative);
-
-                                                        SmartDashboard.putBoolean("theTurtle", theTurtle);
-                                                        SmartDashboard.putBoolean("feild reletive", fieldRelative);
-                                                        SmartDashboard.putNumber("max speed", maxSpeed);
-                                                },
-                                                m_robotDrive));
-                m_shooter.setDefaultCommand(
-                                new RunCommand(
-                                                () -> {
-
-                                                        m_shooter.stopShoot();
-                                                        m_shooter.stopKicky();
-
-                                                }, m_shooter));
-                m_climber.setDefaultCommand(
-                                new RunCommand(
-                                                () -> {
-                                                        boolean extendoButton = m_operatorsStick.button(4)
-                                                                        .getAsBoolean();
-                                                        boolean retractoButton = m_operatorsStick.button(8)
-                                                                        .getAsBoolean();
-                                                        if (extendoButton) {
-                                                                m_climber.ascend();
-                                                        } else if (retractoButton) {
-                                                                m_climber.descend();
-                                                        } else {
-                                                                m_climber.stop();
-                                                        }
-
-                                                }, m_climber));
+                m_robotDrive.setDefaultCommand(m_robotDrive.driveTeleop(m_driverController));
+                m_shooter.setDefaultCommand(m_shooter.stopCommand());
+                m_climber.setDefaultCommand(m_climber.stopCommand());
         }
 
         /**
@@ -147,7 +85,12 @@ public class RobotContainer {
                                 .onFalse(m_aimBot.storeArmCommand());
                 m_operatorsStick.button(6).whileTrue(new Aim(70, m_aimBot))
                                 .onFalse(m_aimBot.storeArmCommand());
+
                 m_driverController.a().onTrue(m_robotDrive.resetGyro());
+                m_driverController.leftTrigger().onTrue(m_robotDrive.setSlowModeCommand(true))
+                                .onFalse(m_robotDrive.setSlowModeCommand(false));
+                m_driverController.rightBumper().onTrue(m_robotDrive.setFieldRelativeCommand(true))
+                                .onFalse(m_robotDrive.setFieldRelativeCommand(false));
         }
 
         /**
@@ -196,10 +139,5 @@ public class RobotContainer {
                                                 () -> m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose())),
                                 swerveControllerCommand,
                                 new InstantCommand(() -> m_robotDrive.drive(0, 0, 0, false)));
-        }
-
-        private static double WithDeadband(double deadband, double thumbstick) {
-                return Math.abs(thumbstick) < deadband ? 0
-                                : ((Math.abs(thumbstick) - deadband) / (1 - deadband) * Math.signum(thumbstick));
         }
 }

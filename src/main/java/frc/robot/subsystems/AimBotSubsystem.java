@@ -14,6 +14,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
@@ -93,22 +94,20 @@ public class AimBotSubsystem extends ProfiledPIDSubsystem {
 
     enable();
   }
-  
 
   @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
-    if (m_enabled) {
-      double actualOutput = output
-          + m_feedForward.calculate(Units.degreesToRadians(getMeasurement()),
-              Units.degreesToRadians(setpoint.velocity));
-      m_leftMotor.setVoltage(actualOutput);
-      m_rightMotor.setVoltage(actualOutput);
-    } else {
-      double actualOutput = m_feedForward.calculate(Units.degreesToRadians(getMeasurement()),
-          0.0);
-      m_leftMotor.setVoltage(actualOutput);
-      m_rightMotor.setVoltage(actualOutput);
-    }
+    double actualOutput = output
+        + m_feedForward.calculate(Units.degreesToRadians(getMeasurement()),
+            Units.degreesToRadians(setpoint.velocity));
+    m_leftMotor.setVoltage(actualOutput);
+    m_rightMotor.setVoltage(actualOutput);
+
+    SmartDashboard.putNumber("aim-bot-voltage", actualOutput);
+    SmartDashboard.putNumber("aim-bot-position", getMeasurement());
+    SmartDashboard.putNumber("aim-bot-velocity", getVelocity());
+    SmartDashboard.putNumber("aim-bot-desired-position", setpoint.position);
+    SmartDashboard.putNumber("aim-bot-desired-velocity", setpoint.velocity);
   }
 
   @Override

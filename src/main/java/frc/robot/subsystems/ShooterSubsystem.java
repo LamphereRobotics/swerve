@@ -8,6 +8,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 
@@ -66,7 +68,15 @@ public class ShooterSubsystem extends SubsystemBase {
       stopShoot();
     }
   }
+
   public boolean hasNote() {
     return m_kickyLimitSwitch.get();
+  }
+
+  public Command stopCommand() {
+    return new RunCommand(() -> {
+      stopShoot();
+      stopKicky();
+    }, this);
   }
 }

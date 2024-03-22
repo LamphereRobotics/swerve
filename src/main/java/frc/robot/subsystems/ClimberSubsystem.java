@@ -4,15 +4,20 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 
 public class ClimberSubsystem extends SubsystemBase {
-  private final ClimberModule m_climbyUno = new ClimberModule(ClimberConstants.kClimbyUno, ClimberConstants.kClimbyLimitSwitchUno, true);
-  private final ClimberModule m_climbyDos = new ClimberModule(ClimberConstants.kClimbyDos, ClimberConstants.kClimbyLimitSwitchDos, false);
+  private final ClimberModule m_climbyUno = new ClimberModule(ClimberConstants.kClimbyUno,
+      ClimberConstants.kClimbyLimitSwitchUno, true);
+  private final ClimberModule m_climbyDos = new ClimberModule(ClimberConstants.kClimbyDos,
+      ClimberConstants.kClimbyLimitSwitchDos, false);
 
   /** Creates a new ClimberSubsystem. */
-  public ClimberSubsystem() {}
+  public ClimberSubsystem() {
+  }
 
   @Override
   public void periodic() {
@@ -32,5 +37,9 @@ public class ClimberSubsystem extends SubsystemBase {
   public void stop() {
     m_climbyUno.stop();
     m_climbyDos.stop();
+  }
+
+  public Command stopCommand() {
+    return new RunCommand(this::stop, this);
   }
 }

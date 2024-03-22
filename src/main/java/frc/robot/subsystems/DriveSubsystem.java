@@ -10,10 +10,15 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -56,6 +61,9 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
       });
 
+  private boolean m_slowMode = false;
+  private boolean m_fieldRelative = false;
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
   }
@@ -72,22 +80,14 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearRight.getPosition()
         });
 
-    // SmartDashboard.putNumber("front-left-angle",
-    // m_frontLeft.getPosition().angle.getDegrees());
-    // SmartDashboard.putNumber("front-left-turn-velocity",
-    // m_frontLeft.getTurnVelocity());
-    // SmartDashboard.putNumber("front-right-angle",
-    // m_frontRight.getPosition().angle.getDegrees());
-    // SmartDashboard.putNumber("front-right-turn-velocity",
-    // m_frontRight.getTurnVelocity());
-    // SmartDashboard.putNumber("rear-left-angle",
-    // m_rearLeft.getPosition().angle.getDegrees());
-    // SmartDashboard.putNumber("rear-left-turn-velocity",
-    // m_rearLeft.getTurnVelocity());
-    // SmartDashboard.putNumber("rear-right-angle",
-    // m_rearRight.getPosition().angle.getDegrees());
-    // SmartDashboard.putNumber("rear-right-turn-velocity",
-    // m_rearRight.getTurnVelocity());
+    m_frontLeft.logStateToDashboard("front-left");
+    m_frontRight.logStateToDashboard("front-right");
+    m_rearLeft.logStateToDashboard("rear-left");
+    m_rearRight.logStateToDashboard("rear-right");
+    SmartDashboard.putNumber("gyro-angle", getHeading());
+    SmartDashboard.putBoolean("is-slow-drive", m_slowMode);
+    SmartDashboard.putBoolean("is-field-relative-drive",
+        m_fieldRelative);
   }
 
   /**
@@ -141,6 +141,32 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
 
+  public Command driveTeleop(CommandXboxController driveController) {
+    return new RunCommand(() -> {
+      double leftY = WithDeadband(Constants.OIConstants.kDeadband,
+          -driveController.getLeftY());
+      double leftX = WithDeadband(Constants.OIConstants.kDeadband,
+          -driveController.getLeftX());
+      double rightX = WithDeadband(Constants.OIConstants.kDeadband,
+          -driveController.getRightX());
+      double maxSpeed = m_slowMode
+          ? DriveConstants.kMaxSpeedMetersPerSecond * 0.5
+          : DriveConstants.kMaxSpeedMetersPerSecond;
+      drive(
+          // Multiply by max speed to map the
+          // joystick
+          // unitless inputs to actual units.
+          // This will map the [-1, 1] to [max
+          // speed
+          // backwards, max speed forwards],
+          // converting them to actual units.
+          leftY * maxSpeed,
+          leftX * maxSpeed,
+          rightX * DriveConstants.kMaxRotationRadiansPerSecond,
+          m_fieldRelative);
+    }, this);
+  }
+
   /**
    * Sets the swerve ModuleStates.
    *
@@ -191,17 +217,24 @@ public class DriveSubsystem extends SubsystemBase {
     return new InstantCommand(this::zeroHeading);
   }
 
-  public void OutVolt(double output) {
-    m_frontLeft.OutVolt(output);
-    m_frontRight.OutVolt(output);
-    m_rearLeft.OutVolt(output);
-    m_rearRight.OutVolt(output);
+  public boolean getSlowMode() {
+    return m_slowMode;
   }
 
-  public void OutFF(double output) {
-    m_frontLeft.OutFF(output);
-    m_frontRight.OutFF(output);
-    m_rearLeft.OutFF(output);
-    m_rearRight.OutFF(output);
+  public Command setSlowModeCommand(boolean slowMode) {
+    return new InstantCommand(() -> m_slowMode = slowMode);
+  }
+
+  public boolean getFieldRelative() {
+    return m_slowMode;
+  }
+
+  public Command setFieldRelativeCommand(boolean fieldRelative) {
+    return new InstantCommand(() -> m_fieldRelative = fieldRelative);
+  }
+
+  private static double WithDeadband(double deadband, double thumbstick) {
+    return Math.abs(thumbstick) < deadband ? 0
+        : ((Math.abs(thumbstick) - deadband) / (1 - deadband) * Math.signum(thumbstick));
   }
 }

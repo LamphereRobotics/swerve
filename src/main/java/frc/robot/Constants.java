@@ -77,7 +77,7 @@ public final class Constants {
 
   public static final class ModuleConstants {
     public static final double kMaxModuleAngularSpeedRadiansPerSecond = 28.5;
-    public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 200;
+    public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 386.9717;
     public static final double kMaxModuleSpeedMetersPerSecond = 4.2;
     public static final double kMaxModuleAccelerationMetersPerSecondSquared = 4.2;
 
@@ -95,6 +95,9 @@ public final class Constants {
     public static final double kIZoneModuleDriveController = 0.3;
     public static final double kIntegratorMaxModuleDriveController = 1.0;
     public static final double kToleranceModuleDriveController = 0.005;
+
+    public static final int kMaxDriveCurrent = 30;
+    public static final int kMaxTurnCurrent = 20;
   }
 
   public static final class OIConstants {

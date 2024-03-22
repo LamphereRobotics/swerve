@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ModuleConstants;
 import com.revrobotics.RelativeEncoder;
@@ -62,11 +63,11 @@ public class SwerveModule {
     m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
     m_turningMotor.setInverted(true);
-    
+
     m_driveMotor.setIdleMode(IdleMode.kBrake);
-    m_driveMotor.setSmartCurrentLimit(40);
+    m_driveMotor.setSmartCurrentLimit(ModuleConstants.kMaxDriveCurrent);
     m_turningMotor.setIdleMode(IdleMode.kBrake);
-    m_turningMotor.setSmartCurrentLimit(20);
+    m_turningMotor.setSmartCurrentLimit(ModuleConstants.kMaxTurnCurrent);
 
     m_turningEncoder = new CANcoder(turningEncoderChannel);
 
@@ -155,11 +156,12 @@ public class SwerveModule {
     return m_turningEncoder.getVelocity().getValue() * 2 * Math.PI;
   }
 
-  public void OutVolt(double output) {
-    m_turningMotor.setVoltage(output);
-  }
-
-  public void OutFF(double output) {
-    m_turningMotor.setVoltage(m_turnFeedForward.calculate(output));
+  public void logStateToDashboard(String name) {
+    SmartDashboard.putNumber(name + "-drive-speed",
+        getState().speedMetersPerSecond);
+    SmartDashboard.putNumber(name + "-turn-angle",
+        getState().angle.getDegrees());
+    SmartDashboard.putNumber(name + "-turn-velocity",
+        getTurnVelocity());
   }
 }
