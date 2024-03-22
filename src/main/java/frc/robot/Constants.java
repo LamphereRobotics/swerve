@@ -71,7 +71,8 @@ public final class Constants {
     // The SysId tool provides a convenient method for obtaining these values for
     // your robot.
 
-    public static final double kMaxSpeedMetersPerSecond = 4.2; // 4.2
+    public static final double kMaxSpeedMetersPerSecond = 4.2;
+    public static final double kMaxRotationRadiansPerSecond = 2 * Math.PI;
   }
 
   public static final class ModuleConstants {

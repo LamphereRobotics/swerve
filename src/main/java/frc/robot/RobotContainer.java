@@ -12,11 +12,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Aim;
 import frc.robot.commands.Shoot;
@@ -96,7 +96,7 @@ public class RobotContainer {
                                                                                 // converting them to actual units.
                                                                                 leftY * DriveConstants.kMaxSpeedMetersPerSecond,
                                                                                 leftX * DriveConstants.kMaxSpeedMetersPerSecond,
-                                                                                rightX * ModuleConstants.kMaxModuleAngularSpeedRadiansPerSecond,
+                                                                                rightX * DriveConstants.kMaxRotationRadiansPerSecond,
                                                                                 false);
                                                 },
                                                 m_robotDrive));
