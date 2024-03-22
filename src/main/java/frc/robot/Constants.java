@@ -72,7 +72,7 @@ public final class Constants {
     // your robot.
 
     public static final double kMaxSpeedMetersPerSecond = 4.2;
-    public static final double kMaxRotationRadiansPerSecond = 2 * Math.PI;
+    public static final double kMaxRotationRadiansPerSecond =  Math.PI;
   }
 
   public static final class ModuleConstants {
