@@ -59,29 +59,45 @@ public class RobotContainer {
                 // Configure the button bindings
                 configureButtonBindings();
 
+                // SmartDashboard.putNumber("OutVolt", 0);
+                // SmartDashboard.putNumber("OutFF", 0);
+
                 // Configure default commands
                 m_robotDrive.setDefaultCommand(
                                 // The left stick controls translation of the robot.
                                 // Turning is controlled by the X axis of the right stick.
                                 new RunCommand(
                                                 () -> {
+                                                        // boolean VoltThingy = m_driverController.x()
+                                                        //                 .getAsBoolean();
+                                                        // boolean FFThingy = m_driverController.a()
+                                                        //                 .getAsBoolean();
                                                         double leftY = WithDeadband(Constants.OIConstants.kDeadband,
                                                                         -m_driverController.getLeftY());
                                                         double leftX = WithDeadband(Constants.OIConstants.kDeadband,
                                                                         -m_driverController.getLeftX());
                                                         double rightX = WithDeadband(Constants.OIConstants.kDeadband,
                                                                         -m_driverController.getRightX());
-
+                                                        // if (VoltThingy) {
+                                                        //         m_robotDrive.OutVolt(
+                                                        //                         SmartDashboard.getNumber("OutVolt", 0));
+                                                        // } else if (FFThingy) {
+                                                        //         m_robotDrive.OutFF(
+                                                        //                         SmartDashboard.getNumber("OutFF", 0));
+                                                        // } else {
+                                                        // }
                                                         m_robotDrive.drive(
-                                                                        // Multiply by max speed to map the joystick
-                                                                        // unitless inputs to actual units.
-                                                                        // This will map the [-1, 1] to [max speed
-                                                                        // backwards, max speed forwards],
-                                                                        // converting them to actual units.
-                                                                        leftY * DriveConstants.kMaxSpeedMetersPerSecond,
-                                                                        leftX * DriveConstants.kMaxSpeedMetersPerSecond,
-                                                                        rightX * ModuleConstants.kMaxModuleAngularSpeedRadiansPerSecond,
-                                                                        false);
+                                                                                // Multiply by max speed to map the
+                                                                                // joystick
+                                                                                // unitless inputs to actual units.
+                                                                                // This will map the [-1, 1] to [max
+                                                                                // speed
+                                                                                // backwards, max speed forwards],
+                                                                                // converting them to actual units.
+                                                                                leftY * DriveConstants.kMaxSpeedMetersPerSecond,
+                                                                                leftX * DriveConstants.kMaxSpeedMetersPerSecond,
+                                                                                rightX * ModuleConstants.kMaxModuleAngularSpeedRadiansPerSecond,
+                                                                                false);
                                                 },
                                                 m_robotDrive));
                 m_shooter.setDefaultCommand(

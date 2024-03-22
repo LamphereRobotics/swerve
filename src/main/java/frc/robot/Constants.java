@@ -75,15 +75,18 @@ public final class Constants {
   }
 
   public static final class ModuleConstants {
-    public static final double kMaxModuleAngularSpeedRadiansPerSecond = 25;
-    public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 25 * 2;
+    public static final double kMaxModuleAngularSpeedRadiansPerSecond = 28.5;
+    public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 386.9717;
     public static final double kMaxModuleSpeedMetersPerSecond = 4.2;
     public static final double kMaxModuleAccelerationMetersPerSecondSquared = 4.2;
 
-    public static final double kPModuleTurningController = 0.4;
-    public static final double kDModuleTurningController = 0.004;
+    public static final double kPModuleTurningController = 2.0;
+    public static final double kIModuleTurningController = 5.0;
+    public static final double kDModuleTurningController = 0.0;
     public static final double kPositionToleranceModuleTurningController = 0.1;
-    public static final double kVelocityToleranceModuleTurningController = 1.0;
+    public static final double kVelocityToleranceModuleTurningController = 0.5;
+    public static final double kIZoneModuleTurningController = 2.0;
+    public static final double kIntegratorMaxModuleTurningController = 2.0;
 
     public static final double kPModuleDriveController = 0.0065166;
     public static final double kIModuleDriveController = 0.0;
@@ -91,14 +94,13 @@ public final class Constants {
     public static final double kIZoneModuleDriveController = 0.3;
     public static final double kIntegratorMaxModuleDriveController = 1.0;
     public static final double kToleranceModuleDriveController = 0.005;
-
   }
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorStickPort = 1;
 
-    public static final double kDeadband = 0.5;
+    public static final double kDeadband = 0.15;
   }
 
   public static final class ShooterConstants {

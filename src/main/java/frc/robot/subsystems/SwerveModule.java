@@ -35,11 +35,12 @@ public class SwerveModule {
           ModuleConstants.kMaxModuleAccelerationMetersPerSecondSquared));
 
   private final SimpleMotorFeedforward m_driveFeedForward = new SimpleMotorFeedforward(0.25156, 2.6507, 0.53777);
+  private final SimpleMotorFeedforward m_turnFeedForward = new SimpleMotorFeedforward(0.38, 0.3961);
 
   // Using a TrapezoidProfile PIDController to allow for smooth turning
   private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
       ModuleConstants.kPModuleTurningController,
-      0,
+      ModuleConstants.kIModuleTurningController,
       ModuleConstants.kDModuleTurningController,
       new TrapezoidProfile.Constraints(
           ModuleConstants.kMaxModuleAngularSpeedRadiansPerSecond,
@@ -80,8 +81,11 @@ public class SwerveModule {
     // to be continuous.
     m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
+    m_turningPIDController.setIZone(Constants.ModuleConstants.kIZoneModuleTurningController);
     m_turningPIDController.setTolerance(Constants.ModuleConstants.kPositionToleranceModuleTurningController,
         Constants.ModuleConstants.kVelocityToleranceModuleTurningController);
+    m_turningPIDController.setIntegratorRange(-Constants.ModuleConstants.kIntegratorMaxModuleTurningController,
+        Constants.ModuleConstants.kIntegratorMaxModuleTurningController);
   }
 
   /**
@@ -126,12 +130,13 @@ public class SwerveModule {
     final double driveOutput = m_drivePIDController.calculate(m_driveEncoder.getVelocity(), state.speedMetersPerSecond);
 
     // Calculate the turning motor output from the turning PID controller.
-    final double turnOutput = m_turningPIDController.calculate(getTurnAngle(), state.angle.getRadians());
+    final double turnOutput = m_turningPIDController.calculate(getTurnAngle(),
+        state.angle.getRadians());
 
     // Calculate the turning motor output from the turning PID controller.
     m_driveMotor.set(
         driveOutput + m_driveFeedForward.calculate(state.speedMetersPerSecond));
-    m_turningMotor.set(turnOutput);
+    m_turningMotor.setVoltage(turnOutput + m_turnFeedForward.calculate(m_turningPIDController.getSetpoint().velocity));
   }
 
   /** Zeroes all the SwerveModule encoders. */
@@ -142,5 +147,17 @@ public class SwerveModule {
 
   private double getTurnAngle() {
     return m_turningEncoder.getAbsolutePosition().getValue() * 2 * Math.PI;
+  }
+
+  public double getTurnVelocity() {
+    return m_turningEncoder.getVelocity().getValue() * 2 * Math.PI;
+  }
+
+  public void OutVolt(double output) {
+    m_turningMotor.setVoltage(output);
+  }
+
+  public void OutFF(double output) {
+    m_turningMotor.setVoltage(m_turnFeedForward.calculate(output));
   }
 }

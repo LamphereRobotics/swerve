@@ -69,6 +69,23 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+
+    // SmartDashboard.putNumber("front-left-angle",
+    // m_frontLeft.getPosition().angle.getDegrees());
+    // SmartDashboard.putNumber("front-left-turn-velocity",
+    // m_frontLeft.getTurnVelocity());
+    // SmartDashboard.putNumber("front-right-angle",
+    // m_frontRight.getPosition().angle.getDegrees());
+    // SmartDashboard.putNumber("front-right-turn-velocity",
+    // m_frontRight.getTurnVelocity());
+    // SmartDashboard.putNumber("rear-left-angle",
+    // m_rearLeft.getPosition().angle.getDegrees());
+    // SmartDashboard.putNumber("rear-left-turn-velocity",
+    // m_rearLeft.getTurnVelocity());
+    // SmartDashboard.putNumber("rear-right-angle",
+    // m_rearRight.getPosition().angle.getDegrees());
+    // SmartDashboard.putNumber("rear-right-turn-velocity",
+    // m_rearRight.getTurnVelocity());
   }
 
   /**
@@ -166,5 +183,19 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public double getTurnRate() {
     return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+  }
+
+  public void OutVolt(double output) {
+    m_frontLeft.OutVolt(output);
+    m_frontRight.OutVolt(output);
+    m_rearLeft.OutVolt(output);
+    m_rearRight.OutVolt(output);
+  }
+
+  public void OutFF(double output) {
+    m_frontLeft.OutFF(output);
+    m_frontRight.OutFF(output);
+    m_rearLeft.OutFF(output);
+    m_rearRight.OutFF(output);
   }
 }
