@@ -143,7 +143,7 @@ public class RobotContainer {
                                 .onFalse(m_aimBot.storeArmCommand());
                 m_operatorsStick.button(5).whileTrue(new Aim(45, m_aimBot).andThen(new Shoot(.6, m_shooter)))
                                 .onFalse(m_aimBot.storeArmCommand());
-                m_operatorsStick.button(2).whileTrue(new Aim(34, m_aimBot).andThen(new Sucko(-0.15, -0.2, m_shooter)))
+                m_operatorsStick.button(2).whileTrue(new Aim(30, m_aimBot).andThen(new Sucko(-0.15, -0.2, m_shooter)))
                                 .onFalse(m_aimBot.storeArmCommand());
                 m_operatorsStick.button(6).whileTrue(new Aim(70, m_aimBot))
                                 .onFalse(m_aimBot.storeArmCommand());
