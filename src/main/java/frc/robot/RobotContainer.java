@@ -13,6 +13,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AutoConstants;
@@ -93,6 +94,10 @@ public class RobotContainer {
                                                                         leftX * maxSpeed,
                                                                         rightX * DriveConstants.kMaxRotationRadiansPerSecond,
                                                                         fieldRelative);
+
+                                                        SmartDashboard.putBoolean("theTurtle", theTurtle);
+                                                        SmartDashboard.putBoolean("feild reletive", fieldRelative);
+                                                        SmartDashboard.putNumber("max speed", maxSpeed);
                                                 },
                                                 m_robotDrive));
                 m_shooter.setDefaultCommand(

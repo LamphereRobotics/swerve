@@ -62,9 +62,11 @@ public class SwerveModule {
     m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
     m_turningMotor.setInverted(true);
-
+    
     m_driveMotor.setIdleMode(IdleMode.kBrake);
+    m_driveMotor.setSmartCurrentLimit(40);
     m_turningMotor.setIdleMode(IdleMode.kBrake);
+    m_turningMotor.setSmartCurrentLimit(20);
 
     m_turningEncoder = new CANcoder(turningEncoderChannel);
 
