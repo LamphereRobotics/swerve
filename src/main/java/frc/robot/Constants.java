@@ -72,28 +72,29 @@ public final class Constants {
     // your robot.
 
     public static final double kMaxSpeedMetersPerSecond = 4.2;
-    public static final double kMaxRotationRadiansPerSecond =  Math.PI * 0.5;
+    public static final double kMaxRotationRadiansPerSecond =  Math.PI * 2;
   }
 
   public static final class ModuleConstants {
     public static final double kMaxModuleAngularSpeedRadiansPerSecond = 28.5;
     public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 386.9717;
     public static final double kMaxModuleSpeedMetersPerSecond = 4.2;
-    public static final double kMaxModuleAccelerationMetersPerSecondSquared = 4.2;
 
     public static final double kPModuleTurningController = 2.0;
     public static final double kIModuleTurningController = 5.0;
     public static final double kDModuleTurningController = 0.0;
+    public static final double kSModuleTurningFeedforward = 0.38;
+    public static final double kVModuleTurningFeedforward = 0.3961;
     public static final double kPositionToleranceModuleTurningController = 0.1;
     public static final double kVelocityToleranceModuleTurningController = 0.5;
     public static final double kIZoneModuleTurningController = 2.0;
     public static final double kIntegratorMaxModuleTurningController = 2.0;
-
-    public static final double kPModuleDriveController = 0.0065166;
+	
+    public static final double kPModuleDriveController = 0.5;
     public static final double kIModuleDriveController = 0.0;
     public static final double kDModuleDriveController = 0.0;
-    public static final double kIZoneModuleDriveController = 0.3;
-    public static final double kIntegratorMaxModuleDriveController = 1.0;
+    public static final double kSModuleDriveFeedforward = 0.25156;
+    public static final double kVModuleDriveFeedforward = 2.5633;
     public static final double kToleranceModuleDriveController = 0.005;
 
     public static final int kMaxDriveCurrent = 30;
@@ -109,7 +110,7 @@ public final class Constants {
 
   public static final class ShooterConstants {
     public static final int kKicky = 9;
-    public static final int kKickyLimitSwitch = 0;
+    public static final int kKickyLimitSwitch = 6;
     public static final int kShootNSuckUno = 12;
     public static final int kShootNSuckDos = 13;
   }
@@ -125,13 +126,17 @@ public final class Constants {
     public static final int kClimbyDos = 15;
     public static final int kClimbyLimitSwitchUno = 1;
     public static final int kClimbyLimitSwitchDos = 2;
+
+    public static final double kOutputVoltage = 12.0;
+    public static final double kMaxHeight = 100.0;
+    public static final double kMinHeight = 0.0;
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+    public static final double kMaxSpeedMetersPerSecond = 4.2;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 14.2985;
+    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI * 2;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI * 4;
 
     public static final double kPXController = 1;
     public static final double kPYController = 1;

@@ -10,36 +10,39 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 
 public class ClimberSubsystem extends SubsystemBase {
-  private final ClimberModule m_climbyUno = new ClimberModule(ClimberConstants.kClimbyUno,
-      ClimberConstants.kClimbyLimitSwitchUno, true);
-  private final ClimberModule m_climbyDos = new ClimberModule(ClimberConstants.kClimbyDos,
-      ClimberConstants.kClimbyLimitSwitchDos, false);
+	private final ClimberModule m_climbyUno = new ClimberModule(ClimberConstants.kClimbyUno,
+			ClimberConstants.kClimbyLimitSwitchUno, true);
+	private final ClimberModule m_climbyDos = new ClimberModule(ClimberConstants.kClimbyDos,
+			ClimberConstants.kClimbyLimitSwitchDos, false);
 
-  /** Creates a new ClimberSubsystem. */
-  public ClimberSubsystem() {
-  }
+	/** Creates a new ClimberSubsystem. */
+	public ClimberSubsystem() {
+	}
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+	@Override
+	public void periodic() {
+		m_climbyUno.logToDashboard("climber-left");
+		m_climbyDos.logToDashboard("climber-right");
+	}
 
-  public void ascend() {
-    m_climbyUno.ascend();
-    m_climbyDos.ascend();
-  }
+	public Command ascendCommand() {
+		return new RunCommand(() -> {
+			m_climbyUno.ascend();
+			m_climbyDos.ascend();
+		}, this);
+	}
 
-  public void descend() {
-    m_climbyUno.descend();
-    m_climbyDos.descend();
-  }
+	public Command descendCommand() {
+		return new RunCommand(() -> {
+			m_climbyUno.descend();
+			m_climbyDos.descend();
+		}, this);
+	}
 
-  public void stop() {
-    m_climbyUno.stop();
-    m_climbyDos.stop();
-  }
-
-  public Command stopCommand() {
-    return new RunCommand(this::stop, this);
-  }
+	public Command stopCommand() {
+		return new RunCommand(() -> {
+			m_climbyUno.stop();
+			m_climbyDos.stop();
+		}, this);
+	}
 }

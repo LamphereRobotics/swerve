@@ -11,8 +11,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.OIConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -62,7 +62,7 @@ public class DriveSubsystem extends SubsystemBase {
       });
 
   private boolean m_slowMode = false;
-  private boolean m_fieldRelative = false;
+  private boolean m_fieldRelative = true;
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -80,14 +80,16 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearRight.getPosition()
         });
 
-    m_frontLeft.logStateToDashboard("front-left");
-    m_frontRight.logStateToDashboard("front-right");
-    m_rearLeft.logStateToDashboard("rear-left");
-    m_rearRight.logStateToDashboard("rear-right");
-    SmartDashboard.putNumber("gyro-angle", getHeading());
-    SmartDashboard.putBoolean("is-slow-drive", m_slowMode);
-    SmartDashboard.putBoolean("is-field-relative-drive",
+    m_frontLeft.logStateToDashboard("drive-front-left");
+    m_frontRight.logStateToDashboard("drive-front-right");
+    m_rearLeft.logStateToDashboard("drive-rear-left");
+    m_rearRight.logStateToDashboard("drive-rear-right");
+    SmartDashboard.putNumber("drive-gyro-angle", getHeading());
+    SmartDashboard.putBoolean("drive-is-slow", m_slowMode);
+    SmartDashboard.putBoolean("drive-is-field-relative",
         m_fieldRelative);
+	SmartDashboard.putNumber("drive-pose-x", getPose().getX());
+	SmartDashboard.putNumber("drive-pose-y", getPose().getY());
   }
 
   /**
@@ -143,11 +145,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Command driveTeleop(CommandXboxController driveController) {
     return new RunCommand(() -> {
-      double leftY = WithDeadband(Constants.OIConstants.kDeadband,
+      double leftY = WithDeadband(OIConstants.kDeadband,
           -driveController.getLeftY());
-      double leftX = WithDeadband(Constants.OIConstants.kDeadband,
+      double leftX = WithDeadband(OIConstants.kDeadband,
           -driveController.getLeftX());
-      double rightX = WithDeadband(Constants.OIConstants.kDeadband,
+      double rightX = WithDeadband(OIConstants.kDeadband,
           -driveController.getRightX());
       double maxSpeed = m_slowMode
           ? DriveConstants.kMaxSpeedMetersPerSecond * 0.5
