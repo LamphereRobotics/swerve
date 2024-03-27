@@ -10,15 +10,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.Aim;
 import frc.robot.commands.AutoCommand;
-import frc.robot.commands.Shoot;
-import frc.robot.commands.Sucko;
-import frc.robot.subsystems.AimBotSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /*
@@ -32,7 +28,6 @@ public class RobotContainer {
 	private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 	private final ShooterSubsystem m_shooter = new ShooterSubsystem();
 	// private final ClimberSubsystem m_climber = new ClimberSubsystem();
-	private final AimBotSubsystem m_aimBot = new AimBotSubsystem();
 
 	// The driver's controller
 	private final CommandXboxController m_driverController = new CommandXboxController(
@@ -47,19 +42,9 @@ public class RobotContainer {
 	public RobotContainer() {
 		m_robotDrive.zeroHeading();
 
-		m_autonomousChooser.setDefaultOption("drive forward",
-				new AutoCommand(false, 0.0, 0.0, m_robotDrive, m_aimBot, m_shooter));
-		m_autonomousChooser.addOption("shoot and drive right",
-				new AutoCommand(true, 120, 0.0, m_robotDrive, m_aimBot, m_shooter));
-		m_autonomousChooser.addOption("shoot and drive left",
-				new AutoCommand(true, 240, 0.0, m_robotDrive, m_aimBot, m_shooter));
-		m_autonomousChooser.addOption("do nothing", new InstantCommand());
-		SmartDashboard.putData(m_autonomousChooser);
-
-		// Configure the button bindings
 		configureButtonBindings();
+		configureAutonomousChooser();
 
-		// Configure default commands
 		m_robotDrive.setDefaultCommand(m_robotDrive.driveTeleop(m_driverController));
 		m_shooter.setDefaultCommand(m_shooter.stopCommand());
 		// m_climber.setDefaultCommand(m_climber.stopCommand());
@@ -74,19 +59,9 @@ public class RobotContainer {
 	 * passing it to a
 	 * {@link JoystickButton}.
 	 */
-
 	private void configureButtonBindings() {
-		m_operatorsStick.button(1).whileTrue((new Shoot(.4, m_shooter)))
-				.onFalse(m_aimBot.storeArmCommand());
-		// m_operatorsStick.button(9).whileTrue(new Aim(80, m_aimBot).andThen(new
-		// Shoot(.09, m_shooter)))
-		// .onFalse(m_aimBot.storeArmCommand());
-		m_operatorsStick.button(5).whileTrue(new Aim(45, m_aimBot).andThen(new Shoot(.6, m_shooter)))
-				.onFalse(m_aimBot.storeArmCommand());
-		m_operatorsStick.button(2).whileTrue((new Sucko(-0.15, -0.2, m_shooter)))
-				.onFalse(m_aimBot.storeArmCommand());
-		m_operatorsStick.button(6).whileTrue(new Aim(70, m_aimBot))
-				.onFalse(m_aimBot.storeArmCommand());
+		m_operatorsStick.button(1).whileTrue(m_shooter.shootCommand(.4));
+		m_operatorsStick.button(2).whileTrue(m_shooter.suckCommand());
 
 		// m_operatorsStick.button(4).whileTrue(m_climber.ascendCommand());
 		// m_operatorsStick.button(8).whileTrue(m_climber.descendCommand());
@@ -96,6 +71,17 @@ public class RobotContainer {
 				.onFalse(m_robotDrive.setSlowModeCommand(false));
 		m_driverController.rightBumper().onTrue(m_robotDrive.setFieldRelativeCommand(false))
 				.onFalse(m_robotDrive.setFieldRelativeCommand(true));
+	}
+
+	private void configureAutonomousChooser() {
+		m_autonomousChooser.setDefaultOption("drive forward",
+				new AutoCommand(false, 0.0, 0.0, m_robotDrive, m_shooter));
+		m_autonomousChooser.addOption("shoot and drive right",
+				new AutoCommand(true, 120, 0.0, m_robotDrive, m_shooter));
+		m_autonomousChooser.addOption("shoot and drive left",
+				new AutoCommand(true, 240, 0.0, m_robotDrive, m_shooter));
+		m_autonomousChooser.addOption("do nothing", Commands.none());
+		SmartDashboard.putData(m_autonomousChooser);
 	}
 
 	/**
