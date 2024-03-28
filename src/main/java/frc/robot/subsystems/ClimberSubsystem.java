@@ -4,16 +4,17 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 
 public class ClimberSubsystem extends SubsystemBase {
-	private final ClimberModule m_climbyUno = new ClimberModule(ClimberConstants.kClimbyUno,
-			ClimberConstants.kClimbyLimitSwitchUno, true);
-	private final ClimberModule m_climbyDos = new ClimberModule(ClimberConstants.kClimbyDos,
-			ClimberConstants.kClimbyLimitSwitchDos, false);
+	private final Solenoid m_climbyUno = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.kClimbyUno);
+	private final Solenoid m_climbyDos = new Solenoid(PneumaticsModuleType.REVPH, ClimberConstants.kClimbyDos);
 
 	/** Creates a new ClimberSubsystem. */
 	public ClimberSubsystem() {
@@ -21,28 +22,21 @@ public class ClimberSubsystem extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		m_climbyUno.logToDashboard("climber-left");
-		m_climbyDos.logToDashboard("climber-right");
+		SmartDashboard.putBoolean("climber-left", m_climbyUno.get());
+		SmartDashboard.putBoolean("climber-right", m_climbyUno.get());
 	}
 
 	public Command ascendCommand() {
 		return new RunCommand(() -> {
-			m_climbyUno.ascend();
-			m_climbyDos.ascend();
+			m_climbyUno.set(true);
+			m_climbyDos.set(true);
 		}, this);
 	}
 
 	public Command descendCommand() {
 		return new RunCommand(() -> {
-			m_climbyUno.descend();
-			m_climbyDos.descend();
-		}, this);
-	}
-
-	public Command stopCommand() {
-		return new RunCommand(() -> {
-			m_climbyUno.stop();
-			m_climbyDos.stop();
+			m_climbyUno.set(false);
+			m_climbyDos.set(false);
 		}, this);
 	}
 }

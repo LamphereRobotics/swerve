@@ -122,14 +122,8 @@ public final class Constants {
   }
 
   public static final class ClimberConstants {
-    public static final int kClimbyUno = 14;
-    public static final int kClimbyDos = 15;
-    public static final int kClimbyLimitSwitchUno = 1;
-    public static final int kClimbyLimitSwitchDos = 2;
-
-    public static final double kOutputVoltage = 12.0;
-    public static final double kMaxHeight = 100.0;
-    public static final double kMinHeight = 0.0;
+    public static final int kClimbyUno = 0;
+    public static final int kClimbyDos = 1;
   }
 
   public static final class AutoConstants {
