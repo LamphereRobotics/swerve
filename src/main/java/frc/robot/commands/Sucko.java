@@ -7,14 +7,14 @@ package frc.robot.commands;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class Sucko extends HoldShooterAndFire {
-  /** Creates a new Sucko. */
-  public Sucko(double speed,double kickySpeed, ShooterSubsystem shooter) {
-    super(speed, kickySpeed, shooter);
-  }
+	/** Creates a new Sucko. */
+	public Sucko(double leftSpeed, double rightSpeed, double kickySpeed, ShooterSubsystem shooter) {
+		super(leftSpeed, rightSpeed, kickySpeed, shooter);
+	}
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return m_shooter.hasNote();
-  }
+	// Returns true when the command should end.
+	@Override
+	public boolean isFinished() {
+		return m_shooter.hasNote();
+	}
 }

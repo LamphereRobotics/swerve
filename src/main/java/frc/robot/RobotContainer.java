@@ -76,14 +76,15 @@ public class RobotContainer {
 	 */
 
 	private void configureButtonBindings() {
-		m_operatorsStick.button(1).whileTrue((new Shoot(.4, m_shooter)))
+		m_operatorsStick.button(1).whileTrue((new Shoot(0.35, 0.45, m_shooter)))
 				.onFalse(m_aimBot.storeArmCommand());
 		// m_operatorsStick.button(9).whileTrue(new Aim(80, m_aimBot).andThen(new
 		// Shoot(.09, m_shooter)))
 		// .onFalse(m_aimBot.storeArmCommand());
-		m_operatorsStick.button(5).whileTrue(new Aim(45, m_aimBot).andThen(new Shoot(.6, m_shooter)))
-				.onFalse(m_aimBot.storeArmCommand());
-		m_operatorsStick.button(2).whileTrue((new Sucko(-0.15, -0.2, m_shooter)))
+		// m_operatorsStick.button(5).whileTrue(new Aim(45, m_aimBot).andThen(new
+		// Shoot(.6, m_shooter)))
+		// .onFalse(m_aimBot.storeArmCommand());
+		m_operatorsStick.button(2).whileTrue((new Sucko(-0.15, -0.15, -0.2, m_shooter)))
 				.onFalse(m_aimBot.storeArmCommand());
 		m_operatorsStick.button(6).whileTrue(new Aim(70, m_aimBot))
 				.onFalse(m_aimBot.storeArmCommand());

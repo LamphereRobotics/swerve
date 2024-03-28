@@ -8,32 +8,36 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class StartShooter extends Command {
-  private final double m_speed;
-  private final ShooterSubsystem m_shooter;
+	private final double m_leftSpeed;
+	private final double m_rightSpeed;
+	private final ShooterSubsystem m_shooter;
 
-  public StartShooter(double speed, ShooterSubsystem shooter) {
-    addRequirements(shooter);
-    m_speed = speed;
-    m_shooter = shooter;
-  }
+	public StartShooter(double leftSpeed, double rightSpeed, ShooterSubsystem shooter) {
+		addRequirements(shooter);
+		m_leftSpeed = leftSpeed;
+		m_rightSpeed = rightSpeed;
+		m_shooter = shooter;
+	}
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {}
+	// Called when the command is initially scheduled.
+	@Override
+	public void initialize() {
+	}
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    m_shooter.shoot(m_speed);
-  }
+	// Called every time the scheduler runs while the command is scheduled.
+	@Override
+	public void execute() {
+		m_shooter.shoot(m_leftSpeed, m_rightSpeed);
+	}
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
+	// Called once the command ends or is interrupted.
+	@Override
+	public void end(boolean interrupted) {
+	}
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+	// Returns true when the command should end.
+	@Override
+	public boolean isFinished() {
+		return false;
+	}
 }

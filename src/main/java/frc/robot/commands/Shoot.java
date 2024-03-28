@@ -11,10 +11,11 @@ import frc.robot.subsystems.ShooterSubsystem;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class Shoot extends SequentialCommandGroup {
-  /** Creates a new Shoot. */
-  public Shoot(double speed, ShooterSubsystem shooter) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new StartShooter(speed, shooter).withTimeout(.5), new HoldShooterAndFire(speed, 0.2, shooter).withTimeout(1));
-  }
+	/** Creates a new Shoot. */
+	public Shoot(double leftSpeed, double rightSpeed, ShooterSubsystem shooter) {
+		// Add your commands in the addCommands() call, e.g.
+		// addCommands(new FooCommand(), new BarCommand());
+		addCommands(new StartShooter(leftSpeed, rightSpeed, shooter).withTimeout(.5),
+				new HoldShooterAndFire(leftSpeed, rightSpeed, 0.2, shooter).withTimeout(1));
+	}
 }

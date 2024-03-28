@@ -70,7 +70,7 @@ public class AutoCommand extends SequentialCommandGroup {
 						() -> robotDrive.resetOdometry(exampleTrajectory.getInitialPose())),
 				new WaitCommand(startDelay),
 				new ConditionalCommand(
-						new Aim(57, aimBot).andThen(new Shoot(.4, shooter).andThen(new InstantCommand(() -> {
+						new Aim(57, aimBot).andThen(new Shoot(0.35, 0.45, shooter).andThen(new InstantCommand(() -> {
 							shooter.stopShoot();
 							shooter.stopKicky();
 						}, shooter)).andThen(aimBot.storeArmCommand())), new InstantCommand(),
