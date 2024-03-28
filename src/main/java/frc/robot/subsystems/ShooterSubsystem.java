@@ -23,7 +23,8 @@ public class ShooterSubsystem extends SubsystemBase {
 	private final DigitalInput m_kickyLimitSwitch = new DigitalInput(ShooterConstants.kKickyLimitSwitch);
 
 	public ShooterSubsystem() {
-
+		m_shootNSuckUno.setInverted(false);
+		m_shootNSuckDos.setInverted(true);
 	}
 
 	@Override
