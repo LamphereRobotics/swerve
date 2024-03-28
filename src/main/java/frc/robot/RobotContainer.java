@@ -15,6 +15,7 @@ import frc.robot.commands.AutoCommand;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.Sucko;
 import frc.robot.subsystems.AimBotSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -31,7 +32,7 @@ public class RobotContainer {
 	// The robot's subsystems
 	private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 	private final ShooterSubsystem m_shooter = new ShooterSubsystem();
-	// private final ClimberSubsystem m_climber = new ClimberSubsystem();
+	private final ClimberSubsystem m_climber = new ClimberSubsystem();
 	private final AimBotSubsystem m_aimBot = new AimBotSubsystem();
 
 	// The driver's controller
@@ -62,7 +63,7 @@ public class RobotContainer {
 		// Configure default commands
 		m_robotDrive.setDefaultCommand(m_robotDrive.driveTeleop(m_driverController));
 		m_shooter.setDefaultCommand(m_shooter.stopCommand());
-		// m_climber.setDefaultCommand(m_climber.stopCommand());
+		m_climber.setDefaultCommand(m_climber.descendCommand());
 	}
 
 	/**
@@ -88,8 +89,7 @@ public class RobotContainer {
 		m_operatorsStick.button(6).whileTrue(new Aim(70, m_aimBot))
 				.onFalse(m_aimBot.storeArmCommand());
 
-		// m_operatorsStick.button(4).whileTrue(m_climber.ascendCommand());
-		// m_operatorsStick.button(8).whileTrue(m_climber.descendCommand());
+		m_operatorsStick.button(3).whileTrue(m_climber.ascendCommand());
 
 		m_driverController.a().onTrue(m_robotDrive.resetGyro());
 		m_driverController.leftTrigger().onTrue(m_robotDrive.setSlowModeCommand(true))
