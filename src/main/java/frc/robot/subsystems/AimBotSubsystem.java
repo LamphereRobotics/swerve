@@ -7,14 +7,14 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.lamphere6566.lib.SendableCANSparkMax;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
@@ -64,8 +64,8 @@ class ArmConfig {
 // Everything in the class *should* be correct and the only changes needed
 // should be in the config. Unless IZone or integral range needs to be added.
 public class AimBotSubsystem extends ProfiledPIDSubsystem {
-  private final CANSparkMax m_leftMotor = new CANSparkMax(ArmConfig.kAimyUno, MotorType.kBrushless);
-  private final CANSparkMax m_rightMotor = new CANSparkMax(ArmConfig.kAimyDos, MotorType.kBrushless);
+  private final SendableCANSparkMax m_leftMotor = new SendableCANSparkMax(ArmConfig.kAimyUno, MotorType.kBrushless);
+  private final SendableCANSparkMax m_rightMotor = new SendableCANSparkMax(ArmConfig.kAimyDos, MotorType.kBrushless);
   private final CANcoder m_encoder = new CANcoder(ArmConfig.kAimyCancoder);
   private final ArmFeedforward m_feedForward = new ArmFeedforward(ArmConfig.kSVolts, ArmConfig.kGVolts,
       ArmConfig.kVVoltSecondPerRad,
@@ -102,12 +102,6 @@ public class AimBotSubsystem extends ProfiledPIDSubsystem {
             Units.degreesToRadians(setpoint.velocity));
     m_leftMotor.setVoltage(actualOutput);
     m_rightMotor.setVoltage(actualOutput);
-
-    SmartDashboard.putNumber("aim-bot-voltage", actualOutput);
-    SmartDashboard.putNumber("aim-bot-position", getMeasurement());
-    SmartDashboard.putNumber("aim-bot-velocity", getVelocity());
-    SmartDashboard.putNumber("aim-bot-desired-position", setpoint.position);
-    SmartDashboard.putNumber("aim-bot-desired-velocity", setpoint.velocity);
   }
 
   @Override
@@ -133,5 +127,19 @@ public class AimBotSubsystem extends ProfiledPIDSubsystem {
 
   public Command storeArmCommand() {
     return setGoalCommand(ArmConfig.kStoreArmDegrees);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+
+    builder.setSmartDashboardType("Aim bot");
+    builder.addDoubleProperty("voltage", this::getOutputVoltage, null);
+    builder.addDoubleProperty("measurement", this::getMeasurement, null);
+    builder.addDoubleProperty("velocity", this::getVelocity, null);
+
+    addChild("controller", m_controller);
+    addChild("leftMotor", m_leftMotor);
+    addChild("rightMotor", m_rightMotor);
   }
 }

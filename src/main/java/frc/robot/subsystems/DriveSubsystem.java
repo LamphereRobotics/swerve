@@ -4,22 +4,25 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix6.hardware.Pigeon2;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
-import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-import com.ctre.phoenix6.hardware.Pigeon2;
+import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
   // Robot swerve modules
@@ -27,25 +30,29 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kFrontLeftDriveMotorPort,
       DriveConstants.kFrontLeftTurningMotorPort,
       DriveConstants.kFrontLeftTurningEncoderPorts,
-      DriveConstants.kFrontLeftTurningEncoderReversed);
+      DriveConstants.kFrontLeftTurningEncoderReversed,
+      "frontLeftModule");
 
   private final SwerveModule m_rearLeft = new SwerveModule(
       DriveConstants.kRearLeftDriveMotorPort,
       DriveConstants.kRearLeftTurningMotorPort,
       DriveConstants.kRearLeftTurningEncoderPorts,
-      DriveConstants.kRearLeftTurningEncoderReversed);
+      DriveConstants.kRearLeftTurningEncoderReversed,
+      "rearLeftModule");
 
   private final SwerveModule m_frontRight = new SwerveModule(
       DriveConstants.kFrontRightDriveMotorPort,
       DriveConstants.kFrontRightTurningMotorPort,
       DriveConstants.kFrontRightTurningEncoderPorts,
-      DriveConstants.kFrontRightTurningEncoderReversed);
+      DriveConstants.kFrontRightTurningEncoderReversed,
+      "frontRightModule");
 
   private final SwerveModule m_rearRight = new SwerveModule(
       DriveConstants.kRearRightDriveMotorPort,
       DriveConstants.kRearRightTurningMotorPort,
       DriveConstants.kRearRightTurningEncoderPorts,
-      DriveConstants.kRearRightTurningEncoderReversed);
+      DriveConstants.kRearRightTurningEncoderReversed,
+      "rearRightModule");
 
   // The gyro sensor
   private final Pigeon2 m_gyro = new Pigeon2(DriveConstants.kGyroPort);
@@ -66,6 +73,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
+
   }
 
   @Override
@@ -79,15 +87,6 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
-
-    m_frontLeft.logStateToDashboard("front-left");
-    m_frontRight.logStateToDashboard("front-right");
-    m_rearLeft.logStateToDashboard("rear-left");
-    m_rearRight.logStateToDashboard("rear-right");
-    SmartDashboard.putNumber("gyro-angle", getHeading());
-    SmartDashboard.putBoolean("is-slow-drive", m_slowMode);
-    SmartDashboard.putBoolean("is-field-relative-drive",
-        m_fieldRelative);
   }
 
   /**
@@ -141,14 +140,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
 
-  public Command driveTeleop(CommandXboxController driveController) {
-    return new RunCommand(() -> {
-      double leftY = WithDeadband(Constants.OIConstants.kDeadband,
-          -driveController.getLeftY());
-      double leftX = WithDeadband(Constants.OIConstants.kDeadband,
-          -driveController.getLeftX());
-      double rightX = WithDeadband(Constants.OIConstants.kDeadband,
-          -driveController.getRightX());
+  public Command driveTeleopCommand(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rot) {
+    return run(() -> {
       double maxSpeed = m_slowMode
           ? DriveConstants.kMaxSpeedMetersPerSecond * 0.5
           : DriveConstants.kMaxSpeedMetersPerSecond;
@@ -160,11 +153,11 @@ public class DriveSubsystem extends SubsystemBase {
           // speed
           // backwards, max speed forwards],
           // converting them to actual units.
-          leftY * maxSpeed,
-          leftX * maxSpeed,
-          rightX * DriveConstants.kMaxRotationRadiansPerSecond,
+          xSpeed.getAsDouble() * maxSpeed,
+          ySpeed.getAsDouble() * maxSpeed,
+          rot.getAsDouble() * DriveConstants.kMaxRotationRadiansPerSecond,
           m_fieldRelative);
-    }, this);
+    });
   }
 
   /**
@@ -192,7 +185,6 @@ public class DriveSubsystem extends SubsystemBase {
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
     m_gyro.reset();
-    System.out.println("reset gyro");
   }
 
   /**
@@ -214,27 +206,46 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Command resetGyro() {
-    return new InstantCommand(this::zeroHeading);
+    return runOnce(this::zeroHeading);
   }
 
   public boolean getSlowMode() {
     return m_slowMode;
   }
 
+  public void setSlowMode(boolean slowMode) {
+    m_slowMode = slowMode;
+  }
+
   public Command setSlowModeCommand(boolean slowMode) {
-    return new InstantCommand(() -> m_slowMode = slowMode);
+    return runOnce(() -> setSlowMode(slowMode));
   }
 
   public boolean getFieldRelative() {
     return m_slowMode;
   }
 
-  public Command setFieldRelativeCommand(boolean fieldRelative) {
-    return new InstantCommand(() -> m_fieldRelative = fieldRelative);
+  public void setFieldRelative(boolean fieldRelative) {
+    m_fieldRelative = fieldRelative;
   }
 
-  private static double WithDeadband(double deadband, double thumbstick) {
-    return Math.abs(thumbstick) < deadband ? 0
-        : ((Math.abs(thumbstick) - deadband) / (1 - deadband) * Math.signum(thumbstick));
+  public Command setFieldRelativeCommand(boolean fieldRelative) {
+    return runOnce(() -> setFieldRelative(fieldRelative));
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+
+    builder.setSmartDashboardType("Drive");
+    builder.addBooleanProperty("isSlowMode", this::getSlowMode, (input) -> m_slowMode = input);
+    SmartDashboard.putBoolean("is-field-relative-drive",
+        m_fieldRelative);
+
+    addChild("gyro", m_gyro);
+    addChild("frontLeftModule", m_frontLeft);
+    addChild("frontRightModule", m_frontRight);
+    addChild("rearLeftModule", m_rearLeft);
+    addChild("rearRightModule", m_rearRight);
   }
 }

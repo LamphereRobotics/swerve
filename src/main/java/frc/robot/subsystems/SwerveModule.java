@@ -4,26 +4,30 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.CANcoder;
+
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkRelativeEncoder;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.lamphere6566.lib.SendableCANSparkMax;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import frc.robot.Constants;
 import frc.robot.Constants.ModuleConstants;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkRelativeEncoder;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import com.ctre.phoenix6.hardware.CANcoder;
-
-public class SwerveModule {
-  private final CANSparkMax m_driveMotor;
-  private final CANSparkMax m_turningMotor;
+public class SwerveModule implements Sendable {
+  private final SendableCANSparkMax m_driveMotor;
+  private final SendableCANSparkMax m_turningMotor;
 
   private final CANcoder m_turningEncoder;
   private final RelativeEncoder m_driveEncoder;
@@ -59,9 +63,10 @@ public class SwerveModule {
       int driveMotorChannel,
       int turningMotorChannel,
       int turningEncoderChannel,
-      boolean turningEncoderReversed) {
-    m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
-    m_turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
+      boolean turningEncoderReversed,
+      String name) {
+    m_driveMotor = new SendableCANSparkMax(driveMotorChannel, MotorType.kBrushless);
+    m_turningMotor = new SendableCANSparkMax(turningMotorChannel, MotorType.kBrushless);
     m_turningMotor.setInverted(true);
 
     m_driveMotor.setIdleMode(IdleMode.kBrake);
@@ -156,12 +161,33 @@ public class SwerveModule {
     return m_turningEncoder.getVelocity().getValue() * 2 * Math.PI;
   }
 
-  public void logStateToDashboard(String name) {
-    SmartDashboard.putNumber(name + "-drive-speed",
-        getState().speedMetersPerSecond);
-    SmartDashboard.putNumber(name + "-turn-angle",
-        getState().angle.getDegrees());
-    SmartDashboard.putNumber(name + "-turn-velocity",
-        getTurnVelocity());
+  public String getSubsystem() {
+    return SendableRegistry.getSubsystem(this);
+  }
+
+  public void addChild(String name, Sendable child) {
+    SendableRegistry.addLW(child, getSubsystem(), name);
+  }
+
+  public void disable() {
+    m_driveMotor.disable();
+    m_turningMotor.disable();
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("SwerveModule");
+    builder.setActuator(true);
+    builder.setSafeState(this::disable);
+
+    builder.addDoubleProperty("driveSpeed", () -> getState().speedMetersPerSecond, null);
+    builder.addDoubleProperty("turnAngle", () -> getState().angle.getDegrees(), null);
+    builder.addDoubleProperty("turnVelocity", this::getTurnVelocity, null);
+
+    addChild("driveMotor", m_driveMotor);
+    addChild("driveController", m_drivePIDController);
+    addChild("turningEncoder", m_turningEncoder);
+    addChild("turningMotor", m_turningMotor);
+    addChild("turningController", m_turningPIDController);
   }
 }

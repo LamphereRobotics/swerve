@@ -4,6 +4,11 @@
 
 package frc.robot;
 
+import static edu.lamphere6566.lib.Utils.inverted;
+import static edu.lamphere6566.lib.Utils.withDeadband;
+
+import java.util.List;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -13,8 +18,14 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -25,12 +36,6 @@ import frc.robot.subsystems.AimBotSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import java.util.List;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -57,9 +62,14 @@ public class RobotContainer {
 
                 // Configure the button bindings
                 configureButtonBindings();
+                configureTelemetry();
+
+                var xSpeed = withDeadband(inverted(m_driverController::getLeftY), OIConstants.kDeadband);
+                var ySpeed = withDeadband(inverted(m_driverController::getLeftX), OIConstants.kDeadband);
+                var rot = withDeadband(inverted(m_driverController::getRightX), OIConstants.kDeadband);
 
                 // Configure default commands
-                m_robotDrive.setDefaultCommand(m_robotDrive.driveTeleop(m_driverController));
+                m_robotDrive.setDefaultCommand(m_robotDrive.driveTeleopCommand(xSpeed, ySpeed, rot));
                 m_shooter.setDefaultCommand(m_shooter.stopCommand());
                 m_climber.setDefaultCommand(m_climber.stopCommand());
         }
@@ -139,5 +149,12 @@ public class RobotContainer {
                                                 () -> m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose())),
                                 swerveControllerCommand,
                                 new InstantCommand(() -> m_robotDrive.drive(0, 0, 0, false)));
+        }
+
+        private void configureTelemetry() {
+                SmartDashboard.putData("drive", m_robotDrive);
+                SmartDashboard.putData("aim-bot", m_aimBot);
+                SmartDashboard.putData("aim-bot/controller", m_aimBot.getController());
+                SmartDashboard.putData("shooter", m_shooter);
         }
 }

@@ -4,25 +4,28 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants.ShooterConstants;
+
+import edu.lamphere6566.lib.SendableCANSparkMax;
 
 public class ShooterSubsystem extends SubsystemBase {
 
   // put all the ids in constants
-  private final CANSparkMax m_kicky = new CANSparkMax(ShooterConstants.kKicky, MotorType.kBrushless);
-  private final CANSparkMax m_shootNSuckUno = new CANSparkMax(ShooterConstants.kShootNSuckUno, MotorType.kBrushless);
-  private final CANSparkMax m_shootNSuckDos = new CANSparkMax(ShooterConstants.kShootNSuckDos, MotorType.kBrushless);
+  private final SendableCANSparkMax m_kicky = new SendableCANSparkMax(ShooterConstants.kKicky, MotorType.kBrushless);
+  private final SendableCANSparkMax m_shootNSuckUno = new SendableCANSparkMax(ShooterConstants.kShootNSuckUno, MotorType.kBrushless);
+  private final SendableCANSparkMax m_shootNSuckDos = new SendableCANSparkMax(ShooterConstants.kShootNSuckDos, MotorType.kBrushless);
   private final DigitalInput m_kickyLimitSwitch = new DigitalInput(ShooterConstants.kKickyLimitSwitch);
 
   public ShooterSubsystem() {
-
+    
   }
 
   @Override
@@ -78,5 +81,12 @@ public class ShooterSubsystem extends SubsystemBase {
       stopShoot();
       stopKicky();
     }, this);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+      super.initSendable(builder);
+
+      builder.setSmartDashboardType("Shooter");
   }
 }
