@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AutoCommand;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -47,6 +48,7 @@ public class RobotContainer {
 
 		configureButtonBindings();
 		configureAutonomousChooser();
+		configureLimelight();
 
 		m_robotDrive.setDefaultCommand(m_robotDrive.driveTeleop(m_driverController));
 		m_shooter.setDefaultCommand(m_shooter.stopCommand());
@@ -86,6 +88,11 @@ public class RobotContainer {
 				new AutoCommand(true, 240, 0.0, m_robotDrive, m_shooter));
 		m_autonomousChooser.addOption("do nothing", Commands.none());
 		SmartDashboard.putData(m_autonomousChooser);
+	}
+
+	private void configureLimelight() {
+		LimelightHelpers.setLEDMode_ForceOff(LimelightConstants.kLimelightName);
+		LimelightHelpers.setCameraMode_Driver(LimelightConstants.kLimelightName);
 	}
 
 	/**

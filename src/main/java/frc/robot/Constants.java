@@ -149,4 +149,8 @@ public final class Constants {
 	public static final double kBlue = 0.87;
 	public static final double kOrange = 0.65;
   }
+
+  public static final class LimelightConstants {
+	public static final String kLimelightName = "";
+  }
 }
