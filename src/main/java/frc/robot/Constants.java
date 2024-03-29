@@ -140,4 +140,13 @@ public final class Constants {
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   }
+
+  public static final class LEDConstants {
+	public static final int kBlinkinChannel = 9;
+
+	public static final double kRed = 0.61;
+	public static final double kGreen = 0.77;
+	public static final double kBlue = 0.87;
+	public static final double kOrange = 0.65;
+  }
 }

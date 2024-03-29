@@ -13,6 +13,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AutoCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -29,6 +30,7 @@ public class RobotContainer {
 	private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 	private final ShooterSubsystem m_shooter = new ShooterSubsystem();
 	private final ClimberSubsystem m_climber = new ClimberSubsystem();
+	private final LEDSubsystem m_ledSubsystem = new LEDSubsystem();
 
 	// The driver's controller
 	private final CommandXboxController m_driverController = new CommandXboxController(
@@ -49,6 +51,8 @@ public class RobotContainer {
 		m_robotDrive.setDefaultCommand(m_robotDrive.driveTeleop(m_driverController));
 		m_shooter.setDefaultCommand(m_shooter.stopCommand());
 		m_climber.setDefaultCommand(m_climber.descendCommand());
+		m_ledSubsystem.setDefaultCommand(Commands.either(m_ledSubsystem.setOrangeCommand(),
+				m_ledSubsystem.setBlueCommand(), m_shooter::hasNote));
 	}
 
 	/**
@@ -61,8 +65,8 @@ public class RobotContainer {
 	 * {@link JoystickButton}.
 	 */
 	private void configureButtonBindings() {
-		m_operatorsStick.button(1).whileTrue(m_shooter.shootCommand(.4));
-		m_operatorsStick.button(2).whileTrue(m_shooter.suckCommand());
+		m_operatorsStick.button(1).whileTrue(m_shooter.shootCommand(.4).alongWith(m_ledSubsystem.setRedCommand()));
+		m_operatorsStick.button(2).whileTrue(m_shooter.suckCommand().alongWith(m_ledSubsystem.setGreenCommand()));
 
 		m_operatorsStick.button(3).whileTrue(m_climber.ascendCommand());
 
